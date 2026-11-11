@@ -1,0 +1,2706 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>Dashboard — Edificio Costa Azul</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Costa Azul">
+<meta name="theme-color" content="#0D1B2A">
+<link rel="apple-touch-icon" href="https://amaronovoaflores.github.io/dashboard-bzr712/icon-marga-192.png">
+<link rel="manifest" href="https://amaronovoaflores.github.io/dashboard-bzr712/manifest-ca.json">
+<!-- bust:2026-10-02T14:41:52.193311 updated:2026-08-04T22:24:20.912453 build: 2026-07-01T22:47:58.201721 -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0D1B2A;--slate:#1E3A5F;--ocean:#1A6B8A;
+  --gold:#C9A84C;--gold-light:#F0D080;--amber:#D97706;
+  --red:#DC2626;--green:#16A34A;--teal:#0D9488;
+  --mist:#EEF4FB;--mist2:#F5F8FC;--silver:#94A3B8;
+  --border:#DDE6F0;--white:#FFFFFF;--text:#1E293B;--text-soft:#64748B;--bg:#F0F4F9;
+  --font-display:'DM Serif Display',serif;--font-body:'Outfit',sans-serif;--font-mono:'DM Mono',monospace;
+  --r:10px;--r-lg:16px;
+  --sh:0 1px 3px rgba(13,27,42,.07),0 1px 2px rgba(13,27,42,.04);
+  --sh-lg:0 12px 40px rgba(13,27,42,.14),0 4px 12px rgba(13,27,42,.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5;font-size:13px}
+html{max-width:100vw}
+.shell{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+/* Sidebar */
+.sidebar{background:var(--ink);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-logo{padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.07)}
+.sb-logo-ey{font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.sb-logo-t{font-family:var(--font-display);font-size:18px;color:#fff;line-height:1.2}
+.sb-logo-s{font-size:10px;color:var(--silver);margin-top:2px}
+.sb-info{margin:14px 14px 0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:var(--r);padding:10px 12px}
+.sb-info-lbl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--silver);margin-bottom:4px;font-family:var(--font-mono)}
+.sb-info-val{font-size:11px;color:#fff;font-family:var(--font-mono)}
+.sb-info-sub{font-size:9px;color:rgba(255,255,255,.3);margin-top:3px}
+.sb-filters{padding:16px 14px 8px}
+.sb-flbl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px;font-family:var(--font-mono)}
+.fg{margin-bottom:10px}
+.fg label{font-size:10px;color:var(--silver);display:block;margin-bottom:4px}
+select.fsel{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.11);border-radius:6px;color:#fff;font-size:12px;padding:6px 8px;cursor:pointer;appearance:none}
+select.fsel option{background:var(--slate);color:#fff}
+.sb-nav{padding:8px 10px;flex:1}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;cursor:pointer;margin-bottom:2px;color:var(--silver);font-size:12px;font-weight:500;border:none;background:none;width:100%;text-align:left;transition:background .14s}
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav-item.active{background:rgba(201,168,76,.15);color:var(--gold)}
+.nav-num{font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.2);margin-left:auto}
+.sb-foot{padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);font-size:9px;color:rgba(255,255,255,.2);font-family:var(--font-mono);line-height:1.7}
+/* Main */
+.main{overflow:auto}
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:11px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:var(--sh)}
+.topbar-title{font-size:15px;font-weight:600;color:var(--text)}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.chip{font-family:var(--font-mono);font-size:11px;padding:3px 10px;border-radius:20px}
+.chip-period{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);color:var(--amber)}
+.chip-dpto{background:var(--mist);border:1px solid var(--border);color:var(--ocean)}
+/* Sections */
+.sec{display:none;padding:20px 24px 40px;animation:fadeUp .28s ease}
+.sec.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* Section header */
+.sechdr{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.sechdr-bar{width:4px;height:22px;border-radius:2px;flex-shrink:0}
+.sechdr-bar.ocean{background:var(--ocean)}.sechdr-bar.gold{background:var(--gold)}
+.sechdr-bar.teal{background:var(--teal)}.sechdr-bar.red{background:var(--red)}.sechdr-bar.navy{background:var(--slate)}
+.sechdr-title{font-size:16px;font-weight:600}
+.sechdr-sub{font-size:11px;color:var(--text-soft);margin-left:auto}
+/* KPI */
+.krow{display:grid;gap:12px;margin-bottom:13px}
+.krow.c3{grid-template-columns:repeat(3,1fr)}.krow.c2{grid-template-columns:repeat(2,1fr)}.krow.c4{grid-template-columns:repeat(4,1fr)}
+.kpi{background:#fff;border-radius:var(--r);padding:15px 17px 12px;box-shadow:var(--sh);border:1px solid var(--border);position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
+.kpi.ocean::before{background:var(--ocean)}.kpi.red::before{background:var(--red)}.kpi.green::before{background:var(--green)}
+.kpi.gold::before{background:var(--gold)}.kpi.amber::before{background:var(--amber)}.kpi.teal::before{background:var(--teal)}
+.kpi-lbl{font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--text-soft);margin-bottom:6px}
+.kpi-val{font-family:var(--font-display);font-size:21px;line-height:1;margin-bottom:8px}
+.kpi.ocean .kpi-val{color:var(--ocean)}.kpi.red .kpi-val{color:var(--red)}.kpi.green .kpi-val{color:var(--green)}
+.kpi.gold .kpi-val{color:var(--amber)}.kpi.amber .kpi-val{color:var(--amber)}.kpi.teal .kpi-val{color:var(--teal)}
+.kpi-rows{display:flex;flex-direction:column;gap:3px}
+.kpi-line{display:flex;justify-content:space-between;font-size:11px}
+.kpi-line-l{color:var(--text-soft)}.kpi-line-v{font-family:var(--font-mono);font-size:10.5px;font-weight:500;color:var(--text)}
+.kpi-sub{margin-top:7px;padding-top:7px;border-top:1px solid var(--border);display:flex;gap:14px}
+.kpi-sub-i{display:flex;flex-direction:column}
+.kpi-sub-l{font-size:9px;color:var(--text-soft)}.kpi-sub-v{font-size:11px;font-weight:500;font-family:var(--font-mono);color:var(--text-soft)}
+/* Panel */
+.panel{background:#fff;border-radius:var(--r);box-shadow:var(--sh);border:1px solid var(--border);overflow:hidden;margin-bottom:13px}
+.phdr{background:var(--slate);padding:8px 14px;display:flex;align-items:center;justify-content:space-between}
+.phdr.ocean-bg{background:var(--ocean)}.phdr.dark-bg{background:#1A3A5C}
+.phdr-t{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#fff}
+.pfooter{padding:5px 12px;font-size:10px;color:var(--text-soft);border-top:1px solid var(--border)}
+/* Tabs */
+.tabrow{display:flex;background:var(--mist);border-bottom:1px solid var(--border)}
+.tabbtn{padding:7px 13px;font-size:11px;font-weight:500;cursor:pointer;color:var(--text-soft);border:none;background:none;border-bottom:2px solid transparent}
+.tabbtn.active{color:var(--ocean);border-bottom-color:var(--ocean);background:#fff}
+.tabcnt{display:none}.tabcnt.active{display:block}
+/* Table */
+.twrap.full{max-height:none!important;overflow-y:visible}
+.twrap{max-height:230px;overflow-y:auto}.twrap.tall{max-height:360px}
+table{width:100%;border-collapse:collapse;font-size:11.5px}
+th{padding:5px 9px;text-align:left;font-size:9.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-soft);border-bottom:1px solid var(--border);background:var(--mist);position:sticky;top:0;z-index:1}
+th.r,td.r{text-align:right}
+td{padding:5px 9px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+tr:last-child td{border-bottom:none}tr:hover td{background:var(--mist2)}
+tr.grp td{background:var(--mist);font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-soft);padding:3px 9px}
+tr.tot td{background:var(--mist);font-weight:700;border-top:1.5px solid var(--border)}
+tr.totm td{background:var(--ink);color:#fff;font-weight:700;font-size:12px;border-top:2px solid var(--slate)}
+/* Badges */
+.badge{display:inline-block;font-size:9.5px;padding:2px 7px;border-radius:20px;font-weight:600}
+.bok{background:#E1F5EE;color:#0F6E56}.bpd{background:#FAECE7;color:#993C1D}
+.bwn{background:#FAEEDA;color:#854F0B}.bif{background:#E6F1FB;color:#0C447C}
+/* Progress */
+.progw{display:flex;align-items:center;gap:6px}
+.progbg{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;min-width:36px}
+.progfill{height:5px;border-radius:3px}
+.proglbl{font-size:10px;font-weight:600;min-width:28px;text-align:right}
+/* Two-col */
+.twocol{display:grid;grid-template-columns:1fr 1.4fr;gap:13px}
+/* S3 */
+.leyenda{display:flex;gap:12px;flex-wrap:wrap;padding:7px 12px;font-size:10px;color:var(--text-soft);border-top:1px solid var(--border)}
+.leyi{display:flex;align-items:center;gap:4px}
+.leydot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cell-am{display:inline-block;width:11px;height:11px;border-radius:2px;background:#FFD966;border:.5px solid #BA7517;vertical-align:middle;margin:0 3px}
+.cell-bl{display:inline-block;width:11px;height:11px;border-radius:2px;background:#fff;border:.5px solid var(--border);vertical-align:middle;margin:0 3px}
+/* S5 */
+.rpt-ctrl{background:#fff;border-radius:var(--r);padding:13px 16px;border:1px solid var(--border);margin-bottom:13px;display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.btn-pr{background:var(--ocean);color:#fff;border:none;border-radius:var(--r);padding:7px 14px;font-size:12px;font-weight:500;cursor:pointer}
+.btn-dr{background:#1967D2;color:#fff;border:none;border-radius:var(--r);padding:7px 14px;font-size:12px;font-weight:500;cursor:pointer}
+.rpt-wrap{background:var(--mist);border-radius:var(--r);border:1px solid var(--border);overflow:hidden}
+.rpt-topbar{padding:7px 12px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text-soft)}
+iframe.rpt{width:100%;height:680px;border:none;display:block}
+/* Dpto cell */
+.dc{font-weight:600;font-family:monospace;font-size:12px}
+/* Selector mes solo en móvil */
+.month-sel-mobile{display:none}
+
+/* Sync indicator */
+.sb-sync{margin:0 14px 0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:var(--r);padding:8px 12px;display:flex;align-items:center;gap:8px}
+.sb-sync-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:background .3s}
+.sb-sync-dot.ok{background:#16A34A}
+.sb-sync-dot.loading{background:var(--amber);animation:blink 1s infinite}
+.sb-sync-dot.offline{background:var(--silver)}
+.sb-sync-dot.error{background:var(--red)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.sb-sync-txt{font-size:9.5px;color:var(--silver);font-family:var(--font-mono)}
+.btn-resync{margin:8px 14px 0;width:calc(100% - 28px);background:rgba(201,168,76,.13);border:1px solid rgba(201,168,76,.28);color:var(--gold);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:6px;border-radius:6px;cursor:pointer;font-family:var(--font-mono)}
+.btn-resync:hover{background:rgba(201,168,76,.22)}
+
+/* ── RESPONSIVO MÓVIL ─────────────────────────────── */
+.month-sel-mobile{display:none}
+
+@media(max-width:768px){
+  html,body{
+    font-size:12px;
+    width:100%;
+    overflow-x:hidden;
+  }
+  .shell{
+    display:block;
+    width:100%;
+    min-height:100vh;
+  }
+  .sidebar{
+    position:fixed;
+    bottom:0;left:0;right:0;
+    top:auto;
+    height:56px;
+    flex-direction:row;
+    align-items:center;
+    z-index:100;
+    overflow:hidden;
+    width:100%;
+  }
+  .sb-logo,.sb-info,.sb-filters,.sb-foot{display:none}
+  .sb-sync{flex-shrink:0;margin:0 4px;padding:3px 6px;font-size:9px;white-space:nowrap}
+  .btn-resync{
+    flex-shrink:0;margin:0 2px;width:28px;height:28px;min-width:28px;
+    padding:0;font-size:13px;border-radius:50%;letter-spacing:0;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .sb-nav{
+    flex:1;display:flex;flex-direction:row;align-items:center;
+    overflow-x:scroll;overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    touch-action:pan-x;
+    padding:4px;gap:4px;
+    scrollbar-width:none;
+    height:100%;
+  }
+  .sb-nav::-webkit-scrollbar{display:none}
+  .nav-item{
+    flex-shrink:0;
+    flex-direction:column;
+    padding:4px 8px;
+    font-size:10px;gap:1px;
+    white-space:nowrap;
+    min-width:56px;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    border-radius:8px;
+  }
+  .nav-num{display:none}
+  .main{
+    order:1;
+    width:100%;
+    padding-bottom:64px;
+    overflow-x:hidden;
+  }
+  .topbar{padding:8px 10px}
+  .topbar-title{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+  .topbar-right{display:flex;align-items:center;gap:6px}
+  .chip-period,.chip-dpto{display:none}
+  .month-sel-mobile{display:block!important;font-size:12px}
+  .month-sel-mobile{display:block!important;font-size:12px}
+  .sec{
+    padding:8px;
+    width:100%;
+  }
+  .krow{
+    gap:6px;
+    margin-bottom:6px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .krow.c3,.krow.c4{
+    grid-template-columns:repeat(3,minmax(140px,1fr));
+  }
+  .krow.c2{
+    grid-template-columns:repeat(2,minmax(140px,1fr));
+  }
+  .kpi{
+    padding:8px;
+    min-width:140px;
+  }
+  .kpi-lbl{font-size:8px;letter-spacing:0;white-space:normal}
+  .kpi-val{
+    font-size:14px;
+    margin-bottom:3px;
+    word-break:break-word;
+    white-space:normal;
+    line-height:1.2;
+  }
+  .kpi-line{font-size:9px;flex-wrap:wrap;gap:2px}
+  .kpi-line-l{font-size:9px}
+  .kpi-line-v{font-size:9px}
+  .kpi-sub{flex-wrap:wrap;gap:6px;padding-top:4px;margin-top:4px}
+  .kpi-sub-l,.kpi-sub-v{font-size:9px}
+  .twocol{grid-template-columns:1fr;gap:6px}
+  .panel{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .twrap,.twrap.tall{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    max-height:200px;
+  }
+  table{font-size:11px;border-collapse:collapse}
+  th,td{padding:4px 6px;white-space:nowrap}
+  .rpt-ctrl{flex-direction:column;gap:6px}
+  iframe.rpt{height:300px}
+  .sechdr-sub{display:none}
+  .actions-row{flex-wrap:wrap;gap:6px}
+}
+
+@media(max-width:480px){
+  .kpi-val{font-size:13px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-ey">Dashboard</div>
+      <div class="sb-logo-t">Costa Azul</div>
+      <div class="sb-logo-s">Gestión de edificio</div>
+    </div>
+    <div class="sb-sync">
+      <div class="sb-sync-dot loading" id="sb-sync-dot"></div>
+      <span class="sb-sync-txt" id="sb-sync-txt">Conectando Drive…</span>
+    </div>
+    <button class="btn-resync" onclick="leerExcelDrive()" title="Actualizar desde Drive">↻</button>
+    <div class="sb-filters">
+      <div class="sb-flbl">Filtros</div>
+      <div class="fg"><label>Año</label>
+        <select class="fsel" id="g-year" onchange="applyFilters()">
+          <option value="2026" selected>2026</option><option value="2025">2025</option>
+        </select>
+      </div>
+      <div class="fg"><label>Mes</label>
+        <select class="fsel" id="g-month" onchange="applyFilters()">
+          <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
+          <option value="4">Abril</option><option value="5" selected>Mayo</option><option value="6">Junio</option>
+          <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Setiembre</option>
+          <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+        </select>
+      </div>
+    </div>
+    <nav class="sb-nav">
+      <button class="nav-item active" onclick="goTo('s1',this)">💰 Caja Bancos <span class="nav-num">1</span></button>
+      <button class="nav-item" onclick="goTo('s2',this)">🏠 Departamentos <span class="nav-num">2</span></button>
+      <button class="nav-item" onclick="goTo('s3',this)">🔧 Mantenimientos <span class="nav-num">3</span></button>
+      <button class="nav-item" onclick="goTo('s4',this)">📊 Presupuesto/Real <span class="nav-num">4</span></button>
+      <button class="nav-item" onclick="goTo('s5',this)">📄 Informes <span class="nav-num">5</span></button>
+      <button class="nav-item" onclick="goTo('s6',this)">📋 Agenda y Actas <span class="nav-num">6</span></button>
+      <button class="nav-item" onclick="goTo('s7',this)">💧 Flujo de Caja <span class="nav-num">7</span></button>
+    </nav>
+    <div class="sb-foot">
+      v3.0 · Edificio Costa Azul<br>
+      Para actualizar: pega el Excel<br>en el chat de Claude
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Caja Bancos</div>
+      <div class="topbar-right">
+        <span class="chip chip-period" id="topbar-period">Mayo 2026</span>
+        <span class="chip chip-dpto" id="topbar-dpto">Todos los dptos</span>
+        <!-- Selector mes visible en móvil -->
+        <select id="topbar-month" class="month-sel-mobile" onchange="document.getElementById('g-month').value=this.value;applyFilters()"
+          style="font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:#fff">
+          <option value="1">Ene</option><option value="2">Feb</option><option value="3">Mar</option>
+          <option value="4">Abr</option><option value="5" selected>May</option><option value="6">Jun</option>
+          <option value="7">Jul</option><option value="8">Ago</option><option value="9">Set</option>
+          <option value="10">Oct</option><option value="11">Nov</option><option value="12">Dic</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- S1 CAJA BANCOS -->
+    <div class="sec active" id="s1">
+      <div class="krow c3">
+        <div class="kpi ocean"><div class="kpi-lbl">Ingresos cobrados</div><div class="kpi-val" id="s1-ic">—</div>
+          <div class="kpi-rows"><div class="kpi-line"><span class="kpi-line-l">Dptos pagados</span><span class="kpi-line-v" id="s1-dp">—</span></div></div></div>
+        <div class="kpi red"><div class="kpi-lbl">Egresos pagados</div><div class="kpi-val" id="s1-ep">—</div>
+          <div class="kpi-rows">
+            <div class="kpi-line"><span class="kpi-line-l">Dev. mes actual</span><span class="kpi-line-v" id="s1-epa">—</span></div>
+            <div class="kpi-line"><span class="kpi-line-l">Dev. meses ant.</span><span class="kpi-line-v" id="s1-epv">—</span></div>
+          </div></div>
+        <div class="kpi green"><div class="kpi-lbl">Saldo del mes</div><div class="kpi-val" id="s1-sm">—</div>
+          <div class="kpi-sub">
+            <div class="kpi-sub-i"><span class="kpi-sub-l">Saldo inicial</span><span class="kpi-sub-v" id="s1-si">—</span></div>
+            <div class="kpi-sub-i"><span class="kpi-sub-l">Saldo caja</span><span class="kpi-sub-v" id="s1-sc">—</span></div>
+          </div></div>
+      </div>
+      <div class="krow c2">
+        <div class="kpi amber"><div class="kpi-lbl">Ingresos pendientes</div><div class="kpi-val" id="s1-ip">—</div>
+          <div class="kpi-rows"><div class="kpi-line"><span class="kpi-line-l">Dptos deudores</span><span class="kpi-line-v" id="s1-dd">—</span></div></div></div>
+        <div class="kpi amber"><div class="kpi-lbl">Egresos pendientes del mes</div><div class="kpi-val" id="s1-epm">—</div>
+          <div class="kpi-rows">
+            <div class="kpi-line"><span class="kpi-line-l">Sin pago, dev. mes actual</span><span class="kpi-line-v" id="s1-epmn">—</span></div>
+          </div>
+          <div id="s1-epm-extra"></div>
+        </div>
+      </div>
+      <div class="twocol">
+        <div>
+          <div class="phdr" style="border-radius:var(--r) var(--r) 0 0;border:1px solid var(--border);border-bottom:none"><span class="phdr-t">↓ Ingresos</span></div>
+          <div class="panel" style="border-top-left-radius:0;border-top-right-radius:0">
+            <div class="tabrow">
+              <button class="tabbtn active" onclick="stab('ing','act',this)">Mes actual</button>
+              <button class="tabbtn" onclick="stab('ing','vec',this)">Mes vencido</button>
+            </div>
+            <div id="ing-act" class="tabcnt active"><div class="twrap"><table><thead><tr><th>Dpto</th><th>Mes pago</th><th>Devengue</th><th>Fecha pago</th><th class="r">Pago</th><th>Estado</th></tr></thead><tbody id="tb-ia"></tbody></table></div></div>
+            <div id="ing-vec" class="tabcnt"><div class="twrap"><table><thead><tr><th>Dpto</th><th>Devengue</th><th class="r">Deuda</th><th>Estado</th></tr></thead><tbody id="tb-iv"></tbody></table></div></div>
+            <div class="pfooter">Scroll para ver más</div>
+          </div>
+        </div>
+        <div>
+          <div class="phdr dark-bg" style="border-radius:var(--r) var(--r) 0 0;border:1px solid var(--border);border-bottom:none"><span class="phdr-t">↑ Egresos</span></div>
+          <div class="panel" style="border-top-left-radius:0;border-top-right-radius:0">
+            <div class="tabrow">
+              <button class="tabbtn active" onclick="stab('egr','act',this)">Mes actual</button>
+              <button class="tabbtn" onclick="stab('egr','vec',this)">Mes vencido</button>
+            </div>
+            <div id="egr-act" class="tabcnt active"><div class="twrap"><table><thead><tr><th>Mes act.</th><th>Devengue</th><th>Titular</th><th class="r">Pago</th></tr></thead><tbody id="tb-ea"></tbody></table></div></div>
+            <div id="egr-vec" class="tabcnt"><div class="twrap"><table><thead><tr><th>Mes act.</th><th>Devengue</th><th>Titular</th><th class="r">Pago</th><th>Días</th></tr></thead><tbody id="tb-ev"></tbody></table></div></div>
+            <div class="pfooter">Scroll para ver más</div>
+          </div>
+        </div>
+      </div>
+
+    <!-- Matriz de Deuda — siempre visible en S1 -->
+    <div style="margin-top:14px">
+      <div class="phdr dark-bg" style="border-radius:var(--r) var(--r) 0 0;border:1px solid var(--border);border-bottom:none;display:flex;align-items:center;justify-content:space-between">
+        <span class="phdr-t">Matriz de Deuda — Egresos Pendientes de Pago</span>
+        <span style="font-size:10px;color:rgba(255,255,255,.5);font-family:monospace" id="s1-deuda-count"></span>
+      </div>
+      <div class="panel" style="border-top-left-radius:0;border-top-right-radius:0">
+        <!-- Scroll: 3 filas visibles (~108px) -->
+        <div style="max-height:180px;overflow-y:auto">
+          <table>
+            <thead><tr>
+              <th style="width:10%">Rubro</th>
+              <th style="width:15%">Sub-Rubro</th>
+              <th style="width:27%">Titular</th>
+              <th style="width:7%">Año</th>
+              <th style="width:11%">Mes Dev.</th>
+              <th class="r" style="width:10%">Monto</th>
+              <th class="r" style="width:9%">Pago</th>
+              <th class="r" style="width:11%">Deuda</th>
+            </tr></thead>
+            <tbody id="tb-s1-deuda"></tbody>
+          </table>
+        </div>
+        <!-- Total siempre fijo debajo del scroll -->
+        <table style="width:100%;border-collapse:collapse">
+          <tfoot><tr style="background:var(--ink)">
+            <td colspan="5" style="padding:6px 9px;font-size:10px;font-family:monospace;color:var(--silver);text-align:right;font-weight:600">TOTAL</td>
+            <td class="r" style="padding:6px 9px;font-size:11.5px;font-family:monospace;color:#fff;font-weight:700" id="s1-tot-monto"></td>
+            <td class="r" style="padding:6px 9px;font-size:11.5px;font-family:monospace;color:rgba(255,255,255,.4)">0.00</td>
+            <td class="r" style="padding:6px 9px;font-size:11.5px;font-family:monospace;color:#FCA5A5;font-weight:700" id="s1-tot-deuda"></td>
+          </tr></tfoot>
+        </table>
+      </div>
+    </div>
+    </div><!-- cierre sec s1 -->
+
+    <!-- S2 DEPARTAMENTOS -->
+    <div class="sec" id="s2">
+      <div class="sechdr"><div class="sechdr-bar gold"></div><div class="sechdr-title">Departamentos</div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <span style="font-size:10px;color:var(--text-soft)">Dpto</span>
+          <select class="fsel" id="s2-dpto" onchange="renderS2()" style="background:var(--mist);color:var(--text);min-width:88px;border-color:var(--border)">
+            <option value="todos">Todos</option>
+            <option value="201">201</option><option value="301">301</option><option value="401">401</option><option value="501">501</option>
+            <option value="601">601</option><option value="701">701</option><option value="801">801</option><option value="901">901</option>
+            <option value="1001">1001</option><option value="1101">1101</option><option value="1201">1201</option><option value="1301">1301</option>
+            <option value="1401">1401</option><option value="1501">1501</option><option value="1601">1601</option><option value="1701">1701</option>
+            <option value="1801">1801</option>
+          </select>
+        </div>
+      </div>
+      <div class="krow c4" id="s2-kpis"></div>
+      <div class="panel">
+        <div class="phdr ocean-bg"><span class="phdr-t" id="s2-pt">Ingresos — todos los dptos</span></div>
+        <div class="twrap tall"><table><thead><tr><th>Dpto</th><th>Devengue</th><th>Fecha pago</th><th class="r">Tarifa</th><th class="r">Pago</th><th>Estado</th></tr></thead><tbody id="tb-s2"></tbody></table></div>
+        <div class="pfooter" id="s2-fn"></div>
+      </div>
+    </div>
+
+    <!-- S3 MANTENIMIENTOS -->
+    <div class="sec" id="s3">
+      <div class="sechdr"><div class="sechdr-bar teal"></div><div class="sechdr-title">Mantenimientos Preventivos</div></div>
+      <div class="krow c4" id="s3-kpis"></div>
+      <div class="panel">
+        <div class="phdr"><span class="phdr-t" id="s3-pt">Plan de mantenimiento</span></div>
+        <div class="twrap tall"><table><thead><tr><th>Área</th><th>Pri.</th><th>Ítem</th><th class="r">Programado</th><th>Avance</th></tr></thead><tbody id="tb-s3"></tbody></table></div>
+        <div class="leyenda">
+          <div class="leyi"><div class="leydot" style="background:#E24B4A"></div><strong>1</strong> Emergencia</div>
+          <div class="leyi"><div class="leydot" style="background:#D85A30"></div><strong>2</strong> Urgencia</div>
+          <div class="leyi"><div class="leydot" style="background:#BA7517"></div><strong>3</strong> Necesario</div>
+          <div class="leyi"><div class="leydot" style="background:#0F6E56"></div><strong>4</strong> Deseable</div>
+          <div class="leyi" style="margin-left:10px"><span class="cell-am"></span>Amarillo = 100%</div>
+          <div class="leyi"><span class="cell-bl"></span>Sin color = pendiente</div>
+        </div>
+        <div class="pfooter" id="s3-fn"></div>
+      </div>
+    </div>
+
+    <!-- S4 PRESUPUESTO/REAL -->
+    <div class="sec" id="s4">
+      <div class="sechdr"><div class="sechdr-bar navy"></div><div class="sechdr-title">Presupuesto / Real</div><div class="sechdr-sub" id="s4-sub"></div></div>
+      <div class="krow c3" id="s4-kpis"></div>
+      <div class="panel">
+        <div class="phdr"><span class="phdr-t" id="s4-pt">Comparativo mensual</span></div>
+        <div class="twrap tall"><table><thead><tr><th>Concepto</th><th class="r">Presupuesto</th><th class="r">Real pagado</th><th class="r">Diferencia</th><th>% Alcance</th></tr></thead><tbody id="tb-s4"></tbody></table></div>
+        <div class="pfooter" id="s4-fn"></div>
+      </div>
+    </div>
+
+    <!-- S5 INFORMES -->
+    <div class="sec" id="s5">
+      <div class="sechdr"><div class="sechdr-bar red"></div><div class="sechdr-title">Informes e Impresiones</div></div>
+      <div class="rpt-ctrl">
+        <div class="fg" style="margin-bottom:0"><label style="color:var(--text-soft)">Año</label>
+          <select class="fsel" id="r-year" onchange="buildInforme()" style="background:var(--mist);color:var(--text)"><option value="2026" selected>2026</option><option value="2025">2025</option></select></div>
+        <div class="fg" style="margin-bottom:0"><label style="color:var(--text-soft)">Mes</label>
+          <select class="fsel" id="r-month" onchange="buildInforme()" style="background:var(--mist);color:var(--text)">
+            <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
+            <option value="4">Abril</option><option value="5" selected>Mayo</option><option value="6">Junio</option>
+            <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Setiembre</option>
+            <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+          </select></div>
+        <div class="fg" style="margin-bottom:0"><label style="color:var(--text-soft)">Sección</label>
+          <select class="fsel" id="r-sec" onchange="buildInforme()" style="background:var(--mist);color:var(--text)">
+            <option value="completo">Informe completo</option>
+            <option value="A">A — Caja y Bancos</option>
+            <option value="B">B — Balance Financiero</option>
+            <option value="C">C — Egresos Pendientes</option>
+              <option value="D">D — Egresos Realizados</option>
+          </select></div>
+        <div style="margin-left:auto;display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:9.5px;color:var(--text-soft);font-family:monospace" id="r-fnames"></span>
+          <div style="display:flex;gap:8px">
+            <button class="btn-dr" onclick="descargarHTML()">⬇ Descargar HTML</button>
+            <button class="btn-pr" onclick="imprimirInforme()">🖨 Ver e Imprimir</button>
+            <button class="btn-pr" onclick="descargarPDF()" style="background:#DC2626">⬇ Descargar PDF</button>
+          </div>
+          <span style="font-size:10px;color:var(--text-soft)" id="r-status"></span>
+        </div>
+      </div>
+      <div class="rpt-wrap">
+        <div class="rpt-topbar">
+          <span id="r-hint">Vista previa</span>
+          <div style="display:flex;gap:4px">
+            <button class="tabbtn active" onclick="setRscale(1,this)" style="padding:3px 8px;font-size:10px">100%</button>
+            <button class="tabbtn" onclick="setRscale(.8,this)" style="padding:3px 8px;font-size:10px">80%</button>
+            <button class="tabbtn" onclick="setRscale(.65,this)" style="padding:3px 8px;font-size:10px">65%</button>
+          </div>
+        </div>
+        <div style="overflow:hidden;height:680px" id="r-wrap">
+          <iframe class="rpt" id="r-frame"></iframe>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- S7 FLUJO DE CAJA -->
+    <div class="sec" id="s7">
+      <div class="sechdr"><div class="sechdr-bar teal"></div><div class="sechdr-title">Flujo de Caja — Mes actual y proyección del siguiente</div></div>
+      <div class="krow c4" id="s7-kpis"></div>
+      <div class="panel">
+        <div class="phdr"><span class="phdr-t" id="s7-pt">Flujo de caja</span>
+          <span style="display:flex;align-items:center;gap:8px;font-size:11px;color:#fff">Cobranza supuesta de cuotas
+            <input type="number" id="s7-cob" value="100" min="0" max="100" step="5" onchange="renderS7()" style="width:58px;font-size:12px;padding:3px 6px;border-radius:6px;border:1px solid var(--border)">%<button onclick="s7Pdf()" style="padding:4px 10px;margin-left:6px;background:#16A34A;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">🖨 PDF</button></span></div>
+        <div class="twrap full"><table><thead id="s7-th"></thead><tbody id="tb-s7"></tbody></table></div>
+        <div class="leyenda" id="s7-ley" style="padding:8px 14px;font-size:9px;color:#94A3B8;line-height:1.45;display:block"></div>
+      </div>
+    </div>
+
+    <!-- S6 AGENDA Y ACTAS -->
+    <div class="sec" id="s6">
+
+      <!-- Modal poderes -->
+      <div id="poder-modal" style="display:none;position:fixed;inset:0;background:rgba(13,27,42,.5);z-index:200;align-items:center;justify-content:center">
+        <div style="background:#fff;border-radius:14px;padding:24px;width:380px;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+          <div style="font-size:15px;font-weight:700;margin-bottom:16px;color:var(--text)">⚡ Registrar Poder Notarial</div>
+          <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px">
+            <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-soft)">Dpto que otorga poder</label>
+            <select id="poder-otorga" style="width:100%;font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;height:160px" size="6"></select>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:16px">
+            <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-soft)">Representado por</label>
+            <input type="text" id="poder-receptor" placeholder="Nombre completo del representante"
+              style="font-size:13px;padding:8px 12px;border:1px solid var(--border);border-radius:8px">
+          </div>
+          <div style="display:flex;gap:8px">
+            <button onclick="registrarPoder()" style="flex:1;padding:8px;border:none;border-radius:8px;background:#C9A84C;color:#fff;font-weight:600;cursor:pointer">Registrar</button>
+            <button onclick="document.getElementById('poder-modal').style.display='none'" style="flex:1;padding:8px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sechdr"><div class="sechdr-bar" style="background:#C9A84C"></div><div class="sechdr-title">Agenda y Actas</div></div>
+
+      <!-- Tabs -->
+      <div style="display:flex;border-bottom:2px solid var(--border);margin-bottom:0">
+        <button class="tabbtn active" id="s6tab-agenda" onclick="s6Tab('agenda',this)" style="font-size:13px;font-weight:600;padding:10px 20px">📋 Nueva Agenda</button>
+        <button class="tabbtn" id="s6tab-acta" onclick="s6Tab('acta',this)" style="font-size:13px;font-weight:600;padding:10px 20px">📄 Nueva Acta</button>
+        <button class="tabbtn" id="s6tab-hist" onclick="s6Tab('hist',this)" style="font-size:13px;font-weight:600;padding:10px 20px">🗂 Historial</button>
+      </div>
+
+      <!-- PANEL AGENDA -->
+      <div id="s6p-agenda" style="background:#fff;border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r) var(--r);padding:20px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94A3B8;margin-bottom:10px">Tipo y Número de Junta</div>
+        <div style="display:flex;gap:10px;margin-bottom:14px">
+          <div id="s6-tipo-ord" onclick="s6SetTipo('ORDINARIA')"
+            style="flex:1;padding:12px;border:2px solid var(--ocean);border-radius:10px;cursor:pointer;background:var(--mist);color:var(--ocean);font-size:13px;font-weight:700;text-align:center">
+            🏢 Ordinaria<div style="font-size:10px;color:#94A3B8;font-weight:400;margin-top:2px">Máx. 2 por año</div>
+          </div>
+          <div id="s6-tipo-ext" onclick="s6SetTipo('EXTRAORDINARIA')"
+            style="flex:1;padding:12px;border:2px solid var(--border);border-radius:10px;cursor:pointer;background:#fff;color:#64748B;font-size:13px;font-weight:500;text-align:center">
+            ⚡ Extraordinaria<div style="font-size:10px;color:#94A3B8;font-weight:400;margin-top:2px">Según necesidad</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#64748B">Número</label>
+            <select id="s6-num" onchange="s6UpdateId()" style="font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:8px">
+              <option value="1">N° 1</option><option value="2">N° 2</option><option value="3">N° 3</option>
+              <option value="4">N° 4</option><option value="5">N° 5</option><option value="6">N° 6</option>
+            </select>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#64748B">Año</label>
+            <select id="s6-anio" onchange="s6UpdateId()" style="font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:8px">
+              <option value="2026" selected>2026</option><option value="2027">2027</option><option value="2025">2025</option>
+            </select>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#64748B">ID generado</label>
+            <div id="s6-id-prev" style="background:var(--ink);color:var(--gold);font-family:monospace;font-size:12px;font-weight:700;padding:8px 12px;border-radius:8px">J.ORD-01-2026</div>
+          </div>
+        </div>
+        <div style="height:1px;background:var(--border);margin:14px 0"></div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94A3B8;margin-bottom:10px">Datos de Convocatoria</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#64748B">Fecha</label>
+            <input type="date" id="s6-fecha" style="font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:8px">
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#64748B">1ra convocatoria</label>
+            <input type="time" id="s6-hora1" value="20:00" style="font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:8px">
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#64748B">2da convocatoria</label>
+            <input type="time" id="s6-hora2" value="20:30" style="font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:8px">
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;grid-column:1/-1">
+            <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#64748B">Lugar</label>
+            <input type="text" id="s6-lugar" value="Hall de ingreso del Edificio Costa Azul, Av. Paseo de la República N° 6240, Miraflores"
+              style="font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:8px">
+          </div>
+        </div>
+        <div style="height:1px;background:var(--border);margin:14px 0"></div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94A3B8;margin-bottom:10px">Puntos de Agenda</div>
+        <div id="s6-puntos-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px"></div>
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <input type="text" id="s6-nuevo-punto" placeholder="Escribe el punto brevemente (ej: aprobación presupuesto 2026)..."
+            onkeydown="if(event.key==='Enter')s6AddPunto()"
+            style="flex:1;font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:8px">
+          <button onclick="s6AddPunto()" style="padding:7px 14px;background:var(--ocean);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">+ Agregar</button>
+        </div>
+        <div id="s6-ag-status" style="display:none;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:10px"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button onclick="s6GenerarAgenda()" style="padding:8px 16px;background:#C9A84C;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">✨ Generar con IA</button>
+          <button onclick="s6GuardarAgenda()" style="padding:8px 16px;background:var(--ocean);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">💾 Guardar Agenda</button>
+          <button onclick="s6LimpiarAgenda()" style="padding:8px 16px;background:#fff;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer">🗑 Limpiar</button>
+        </div>
+        <div id="s6-ag-preview" style="display:none;margin-top:14px;border-radius:var(--r);overflow:hidden;border:1px solid var(--border)">
+          <div style="background:#1E3A5F;padding:8px 14px;display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:11px;font-weight:600;color:#fff;letter-spacing:.08em;text-transform:uppercase" id="s6-ag-prev-title">Vista previa</span>
+            <div style="display:flex;gap:6px">
+              <button onclick="s6ImprimirDoc('agenda')" style="padding:5px 10px;background:#16A34A;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">🖨 Imprimir / Guardar PDF</button>
+            </div>
+          </div>
+          <iframe id="s6-ag-frame" style="width:100%;height:420px;border:none;display:block"></iframe>
+        </div>
+      </div>
+
+      <!-- PANEL ACTA -->
+      <div id="s6p-acta" style="display:none;background:#fff;border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r) var(--r);padding:20px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94A3B8;margin-bottom:10px">Selecciona la Agenda correspondiente</div>
+        <div id="s6-agendas-acta" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
+          <div style="text-align:center;padding:20px;color:#94A3B8;font-size:12px">No hay agendas guardadas. Crea una agenda primero.</div>
+        </div>
+        <div style="height:1px;background:var(--border);margin:14px 0"></div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94A3B8;margin-bottom:10px">Datos del Acta</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#64748B">Fecha</label>
+            <input type="date" id="s6-ac-fecha" style="font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:8px">
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#64748B">Hora inicio</label>
+            <input type="time" id="s6-ac-hora-ini" value="20:00" style="font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:8px">
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <label style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#64748B">Hora cierre</label>
+            <input type="time" id="s6-ac-hora-fin" value="21:30" style="font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:8px">
+          </div>
+        </div>
+        <div style="height:1px;background:var(--border);margin:14px 0"></div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94A3B8;margin-bottom:8px">Quórum — Asistencia</div>
+        <div id="s6-quorum-info" style="background:var(--mist);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span id="s6-quorum-txt" style="color:var(--red);font-weight:700">✗ Quórum: 0/17 (mínimo 10)</span>
+          <button onclick="document.getElementById('poder-modal').style.display='flex'" style="margin-left:auto;padding:5px 10px;background:#C9A84C;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">+ Registrar Poder</button>
+        </div>
+        <div id="s6-quorum-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px"></div>
+        <div style="height:1px;background:var(--border);margin:14px 0"></div>
+
+        <!-- Quórum Directiva -->
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94A3B8;margin-bottom:8px">Presencia de Directiva</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px" id="s6-dir-grid"></div>
+
+        <div style="height:1px;background:var(--border);margin:14px 0"></div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94A3B8;margin-bottom:10px">Acuerdos por Punto</div>
+        <div id="s6-acuerdos-empty" style="font-size:12px;color:#94A3B8;padding:8px 0">Selecciona una agenda para importar los puntos automáticamente.</div>
+        <div id="s6-acuerdos-list"></div>
+        <div id="s6-ac-status" style="display:none;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:10px"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+          <button onclick="s6GenerarActa()" style="padding:8px 16px;background:#C9A84C;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">✨ Generar Acta con IA</button>
+          <button onclick="s6LimpiarActa()" style="padding:8px 16px;background:#fff;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer">🗑 Limpiar</button>
+        </div>
+        <div id="s6-ac-preview" style="display:none;margin-top:14px;border-radius:var(--r);overflow:hidden;border:1px solid var(--border)">
+          <div style="background:#1E3A5F;padding:8px 14px;display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:11px;font-weight:600;color:#fff;letter-spacing:.08em;text-transform:uppercase" id="s6-ac-prev-title">Vista previa — Acta</span>
+            <div style="display:flex;gap:6px">
+              <button onclick="s6GuardarActa()" style="padding:5px 10px;background:#1A6B8A;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">💾 Guardar Acta</button>
+              <button onclick="s6ImprimirDoc('acta')" style="padding:5px 10px;background:#16A34A;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">🖨 Imprimir / PDF</button>
+            </div>
+          </div>
+          <iframe id="s6-ac-frame" style="width:100%;height:420px;border:none;display:block"></iframe>
+        </div>
+      </div>
+
+      <!-- PANEL HISTORIAL -->
+      <div id="s6p-hist" style="display:none;background:#fff;border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r) var(--r);padding:20px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94A3B8;margin-bottom:10px">Agendas y Actas guardadas</div>
+        <div id="s6-historial"></div>
+      </div>
+
+    </div><!-- /s6 -->
+
+  </main>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   DATOS — Mayo 2026
+   Para actualizar: pide a Claude que lea el Excel
+   y te genere este bloque nuevo
+══════════════════════════════════════════════════ */
+const DATOS = {
+  mes: 5, anio: 2026,
+  saldo_ini:  4614,      // Saldo inicial Mayo — se sobreescribe desde Excel
+  saldo_caja: 3058.81,   // Saldo caja (final del mes) — se sobreescribe desde Excel
+  saldo_mes:  -1555.19,  // Saldo del mes — se sobreescribe desde Excel
+  ing_mes:    6600,      // Ingreso mensual — se sobreescribe desde Excel
+  egr_mes:    8155.19,   // Egreso mensual — se sobreescribe desde Excel
+  presup_ing: 10800,
+
+  // CxC: pagado=true → ya pagó, pagado=false → debe
+  // Deudores Mayo 2026 según Excel Drive
+  // Deudores: 201, 1501, 1801 (3 dptos)
+  // Pagados: 14 dptos
+  dptos: [
+    {d:201,  t:600,  pagado:false, fp:null},
+    {d:301,  t:600,  pagado:true,  fp:null},
+    {d:401,  t:600,  pagado:true,  fp:null},
+    {d:501,  t:600,  pagado:true,  fp:null},
+    {d:601,  t:600,  pagado:true,  fp:null},
+    {d:701,  t:600,  pagado:true,  fp:null},
+    {d:801,  t:600,  pagado:true,  fp:null},
+    {d:901,  t:600,  pagado:true,  fp:null},
+    {d:1001, t:600,  pagado:true,  fp:null},
+    {d:1101, t:600,  pagado:true,  fp:null},
+    {d:1201, t:600,  pagado:true,  fp:null},
+    {d:1301, t:600,  pagado:true,  fp:null},
+    {d:1401, t:600,  pagado:true,  fp:null},
+    {d:1501, t:600,  pagado:false, fp:null},
+    {d:1601, t:600,  pagado:true,  fp:null},
+    {d:1701, t:600,  pagado:true,  fp:null},
+    {d:1801, t:1200, pagado:false, fp:null},
+  ],
+
+  // Egresos: ma=mes actual, md=mes devengue, pago=null si no pagado
+  egresos: [
+    {ma:'2026-05',md:'2026-05',sub:'Basicos',           tit:'Luz del Sur',              monto:1608.49, pago:1608.49},
+    {ma:'2026-05',md:'2026-05',sub:'Mantenimiento',     tit:'Limpieza',                 monto:350,     pago:null},
+    {ma:'2026-05',md:'2026-04',sub:'Basicos',           tit:'Luz del Sur',              monto:1665.5,  pago:1665.5},
+    {ma:'2026-05',md:'2024-11',sub:'Planilla Ordinaria',tit:'Hernan Villanueva cts',    monto:650,     pago:650},
+    {ma:'2026-05',md:'2026-05',sub:'Basicos',           tit:'Sedapal Agua',             monto:1102.4,  pago:1102.4},
+    {ma:'2026-05',md:'2026-05',sub:'Planilla Ordinaria',tit:'Rafael Sifuentes',         monto:700,     pago:null},
+    {ma:'2026-05',md:'2025-06',sub:'Planilla Ordinaria',tit:'Hernan Villanueva vac',    monto:650,     pago:null},
+    {ma:'2026-05',md:'2025-05',sub:'Planilla Ordinaria',tit:'Rafael Sifuentes cts',     monto:700,     pago:null},
+    {ma:'2026-05',md:'2026-03',sub:'Mantenimiento',     tit:'Lift Peru',                monto:804,     pago:804},
+    {ma:'2026-05',md:'2025-11',sub:'Planilla Ordinaria',tit:'Rafael Sifuentes cts',     monto:700,     pago:null},
+    {ma:'2026-05',md:'2026-05',sub:'Mantenimiento',     tit:'Jardinero',                monto:100,     pago:null},
+    {ma:'2026-05',md:'2026-04',sub:'Mantenimiento',     tit:'Lift Peru',                monto:800,     pago:null},
+    {ma:'2026-05',md:'2026-05',sub:'Mantenimiento',     tit:'Lift Peru',                monto:800,     pago:null},
+    {ma:'2026-05',md:'2026-05',sub:'Planilla Ordinaria',tit:'Rafael Sifuentes',         monto:700,     pago:700},
+    {ma:'2026-05',md:'2025-05',sub:'Planilla Ordinaria',tit:'Hernan Villanueva cts',    monto:650,     pago:650},
+    {ma:'2026-05',md:'2026-05',sub:'Planilla Ordinaria',tit:'Hernan Villanueva',        monto:650,     pago:650},
+    {ma:'2026-05',md:'2026-05',sub:'Planilla Ordinaria',tit:'Hernan Villanueva',        monto:650,     pago:null},
+    {ma:'2026-05',md:'2026-05',sub:'Planilla domingo',  tit:'Rafael Sifuentes',         monto:480,     pago:null},
+    {ma:'2026-05',md:'2026-03',sub:'Planilla Ordinaria',tit:'Rafael Sifuentes vac',     monto:50,      pago:50},
+    {ma:'2026-05',md:'2026-05',sub:'Insumos',           tit:'Makro',                    monto:144.8,   pago:144.8},
+    {ma:'2026-05',md:'2025-09',sub:'Notariales',        tit:'Myriam Abugattas',         monto:4000,    pago:null},
+    {ma:'2026-05',md:'2025-09',sub:'Notariales',        tit:'Myriam Abugattas',         monto:280,     pago:null},
+    {ma:'2026-05',md:'2025-09',sub:'Notariales',        tit:'Myriam Abugattas',         monto:119.1,   pago:null},
+    {ma:'2026-05',md:'2025-10',sub:'Notariales',        tit:'Myriam Abugattas',         monto:400,     pago:null},
+    {ma:'2026-05',md:'2025-11',sub:'Notariales',        tit:'Myriam Abugattas',         monto:100,     pago:null},
+    {ma:'2026-05',md:'2026-02',sub:'Notariales',        tit:'Myriam Abugattas',         monto:1000,    pago:null},
+    {ma:'2026-05',md:'2026-05',sub:'Tramite banco',     tit:'Nadra de Eguren',          monto:75,      pago:75},
+    {ma:'2026-05',md:'2026-05',sub:'Basicos',           tit:'Telefonia celular',         monto:50,      pago:null},
+    {ma:'2026-05',md:'2026-05',sub:'Insumos',           tit:'case iphone',              monto:55,      pago:55},
+    {ma:'2026-05',md:'2026-05',sub:'Mantenimiento',     tit:'Juan. Cod07',              monto:121,     pago:121},
+  ],
+
+  // Plan Mant Mayo: amarillo=true → 100% ejecutado (celda amarilla en Excel)
+  // Fuente: Hoja "Mantenimiento Anual", col18=Mayo, filas 50-80
+  mant: [
+    {cod:'COD05',area:'Basico',   item:'Ascensor (2) revision',       pri:1, prog:800,  amarillo:true},
+    {cod:'COD07',area:'Seguridad',item:'Iluminacion estacionamiento',  pri:3, prog:200,  amarillo:true},
+    {cod:'COD08',area:'Seguridad',item:'Iluminacion sotano',           pri:3, prog:200,  amarillo:false},
+    {cod:'COD12',area:'Seguridad',item:'Iluminacion escalera',         pri:2, prog:300,  amarillo:false},
+    {cod:'COD14',area:'Basico',   item:'Jardineria',                   pri:3, prog:100,  amarillo:false},
+    {cod:'COD15',area:'Basico',   item:'Limpieza',                     pri:3, prog:400,  amarillo:false},
+    {cod:'COD16',area:'Seguridad',item:'Pintura fachadas',             pri:3, prog:355,  amarillo:false},
+  ],
+
+  // CxC detalle por dpto y mes (se sobreescribe desde Excel)
+  cxc: [],
+
+  // Todos los registros de ingresos (se sobrescriben desde Drive)
+  // ma=MesActual(cuando se pagó), md=MesDevengue, dpto, tarifa, fp=FechaPago, pago, deuda
+  ingresos: [],
+
+  // Presupuesto mensual (Evaluacion 600)
+  presup: [
+    {lb:'Planilla Ordinaria', p:4443, g:'Personal',    sub:'Planilla Ordinaria'},
+    {lb:'Planilla Domingo',   p:672,  g:'Personal',    sub:'Planilla domingo'},
+    {lb:'Luz',                p:1800, g:'Servicios',   sub:'Basicos',  kw:'luz'},
+    {lb:'Agua',               p:1200, g:'Servicios',   sub:'Basicos',  kw:'sedapal'},
+    {lb:'Telefonia Celular',  p:50,   g:'Servicios',   sub:'Basicos',  kw:'telefonia'},
+    {lb:'Insumos',            p:400,  g:'Operaciones', sub:'Insumos'},
+    {lb:'Mantenimiento',      p:2000, g:'Operaciones', sub:'Mantenimiento'},
+    {lb:'Contador',           p:400,  g:'Operaciones', sub:'Contador'},
+  ],
+};
+/* ══ FIN DATOS ══════════════════════════════════════ */
+
+const ML=['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Setiembre','Octubre','Noviembre','Diciembre'];
+const MS=['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Set','Oct','Nov','Dic'];
+const pbc={1:'#E24B4A',2:'#D85A30',3:'#BA7517',4:'#0F6E56'};
+
+// Mes anterior en formato YYYY-MM
+function mkPrev(MK){
+  const [y,m]=MK.split('-').map(Number);
+  if(m===1) return `${y-1}-12`;
+  return `${y}-${String(m-1).padStart(2,'0')}`;
+}
+
+const fs=n=>{if(n===null||n===undefined||isNaN(n))return '—';return 'S/. '+parseFloat(n).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})};
+const mk=(y,m)=>y+'-'+(m<10?'0':'')+m;
+const ddays=(a,b)=>Math.round((new Date(a+'-01')-new Date(b+'-01'))/(864e5));
+const mcel=s=>{if(!s)return '—';const p=s.split('-');return `<div style="line-height:1.3"><span style="font-size:11px">${MS[+p[1]]}</span><div style="font-size:9px;color:#94A3B8">${p[0]}</div></div>`};
+const pb=p=>`<span class="badge" style="background:${pbc[p]||'#888'};color:#fff;font-size:9px">${p}</span>`;
+
+function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function stab(sec,tab,btn){
+  ['act','vec'].forEach(t=>{const e=document.getElementById(sec+'-'+t);if(e)e.classList.remove('active')});
+  document.getElementById(sec+'-'+tab).classList.add('active');
+  btn.closest('.tabrow').querySelectorAll('.tabbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function goTo(id,btn){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');btn.classList.add('active');
+  const t={s1:'Caja Bancos',s2:'Departamentos',s3:'Mantenimientos',s4:'Presupuesto/Real',s5:'Informes',s6:'Agenda y Actas',s7:'Flujo de Caja'};
+  set('topbar-title',t[id]||'');
+  if(id==='s5'){
+    // Sincronizar selectores de S5 con el filtro global
+    const gYear=document.getElementById('g-year').value;
+    const gMonth=document.getElementById('g-month').value;
+    document.getElementById('r-year').value=gYear;
+    document.getElementById('r-month').value=gMonth;
+    buildInforme();
+  }
+  if(id==='s6'){renderAgendasParaActa();renderHistorial();}
+}
+function getF(){
+  const y=parseInt(document.getElementById('g-year').value);
+  const m=parseInt(document.getElementById('g-month').value);
+  return {y,m,MK:mk(y,m),period:`${ML[m]} ${y}`};
+}
+
+function applyFilters(){
+  const {y,m,MK,period}=getF();
+  set('topbar-period',period);
+  // Sincronizar selector de mes en topbar móvil
+  const tbMonth=document.getElementById('topbar-month');
+  if(tbMonth) tbMonth.value=m;
+  // Sincronizar selectores de S5
+  const rYear=document.getElementById('r-year');
+  const rMonth=document.getElementById('r-month');
+  if(rYear) rYear.value=y;
+  if(rMonth) rMonth.value=m;
+  // Normalizar ma para comparación
+  const normMK=s=>{if(!s)return '';const p=s.split('-');return `${p[0]}-${(p[1]||'').padStart(2,'0')}`;};
+  const EG=DATOS.egresos.filter(r=>normMK(r.ma)===MK);
+  renderS1(EG,MK,m);
+  renderS2(MK);
+  renderS3(m);
+  renderS4(MK,m);
+  renderS7(MK);
+}
+
+/* ── S1 ─────────────────────────────────────────── */
+function renderS1(EG,MK,month){
+  // ── INGRESOS ─────────────────────────────────────────────
+  // Ingresos cobrados = pagos donde ma===MK (se pagaron EN el mes seleccionado)
+  // Incluye pagos adelantados (md>MK) y pagos de deudas anteriores (md<MK)
+  const ING=DATOS.ingresos.length>0?DATOS.ingresos:[];
+  const ingDelMes=ING.filter(r=>r.ma===MK&&r.pago>0); // pagados EN este mes
+  const ingCob=ingDelMes.reduce((s,r)=>s+r.pago,0);
+
+  // Ingresos pendientes = dptos con deuda en el mes devengue actual
+  const ingPendRows=ING.filter(r=>r.md===MK&&r.deuda>0);
+  const ingPend=ingPendRows.reduce((s,r)=>s+r.deuda,0);
+
+  // ── EGRESOS ──────────────────────────────────────────────
+  const sumPag=EG.filter(r=>r.pago!==null).reduce((s,r)=>s+r.pago,0);
+  const sumTot=EG.reduce((s,r)=>s+r.monto,0);
+  const sumVecSP=EG.filter(r=>r.pago===null&&r.md<MK).reduce((s,r)=>s+r.monto,0);
+  const egrPend=Math.max(0,sumTot-sumPag-sumVecSP);
+  const eActP=EG.filter(r=>r.pago!==null&&r.md===MK).reduce((s,r)=>s+r.pago,0);
+  const eVecP=EG.filter(r=>r.pago!==null&&r.md<MK).reduce((s,r)=>s+r.pago,0);
+
+  // ── SALDO ─────────────────────────────────────────────────
+  // Saldo inicial: para el primer mes viene de DATOS.saldo_ini
+  // Para meses siguientes: se calcula automáticamente
+  // ingCobMesAnt = pagos realizados EN el mes anterior
+  // egrPagMesAnt = egresos pagados EN el mes anterior
+  // Saldo inicial viene de saldos_por_mes — calculado más abajo
+  // Saldo inicial: buscar en la tabla saldos_por_mes según el mes seleccionado
+  // Si no existe el mes, usar DATOS.saldo_ini como fallback
+  const saldoIniMes = saldoIniDe(MK);
+  // Saldo del mes = ingresos cobrados - egresos pagados en el mes
+  const saldoMes  = ingCob - sumPag;
+  // Saldo caja = saldo inicial del mes + saldo del mes
+  const saldoCaja = saldoIniMes + saldoMes;
+
+  set('s1-ic',fs(ingCob));
+  set('s1-ep',fs(sumPag));
+  const sm=document.getElementById('s1-sm');
+  sm.textContent=fs(saldoMes);
+  sm.style.color=saldoMes>=0?'var(--green)':'var(--red)';
+  // KPI: dptos pagados/pendientes del mes actual
+  // Fuente: DATOS.ingresos (de Drive) con fallback a DATOS.dptos (hardcodeado)
+  const dptosTotal=17;
+  let dptosPagaron, dptosDeben;
+  if(DATOS.ingresos&&DATOS.ingresos.length>0){
+    dptosPagaron=new Set(DATOS.ingresos.filter(r=>r.md===MK&&r.pago>0).map(r=>r.dpto)).size;
+    dptosDeben=new Set(DATOS.ingresos.filter(r=>r.md===MK&&r.deuda>0&&r.pago===0).map(r=>r.dpto)).size;
+  } else {
+    dptosPagaron=DATOS.dptos.filter(d=>d.pagado).length;
+    dptosDeben=DATOS.dptos.filter(d=>!d.pagado).length;
+  }
+  // Egresos pendientes de meses anteriores (arrastre)
+  const egrAntPend=DATOS.egresos.filter(r=>r.pago===null&&r.md<MK).length;
+  const egrAntMonto=DATOS.egresos.filter(r=>r.pago===null&&r.md<MK).reduce((s,r)=>s+r.monto,0);
+
+  set('s1-dp',`${dptosPagaron} de ${dptosTotal}`);
+  set('s1-dd',`${dptosDeben} de ${dptosTotal}`);
+  set('s1-epmn',`${EG.filter(r=>r.pago===null&&r.md===MK).length} registros del mes`);
+  // Actualizar KPI egresos pendientes con línea de arrastre
+  const epmEl=document.getElementById('s1-epm-extra');
+  if(epmEl) epmEl.innerHTML=`<div style="font-size:10px;color:var(--text-soft);margin-top:3px">Egresos anteriores sin pagar: <strong>${egrAntPend} registros · ${fs(egrAntMonto)}</strong></div>`;
+  set('s1-si',fs(saldoIniMes));
+  set('s1-sc',fs(saldoCaja));
+  set('s1-ip',fs(ingPend));
+  set('s1-epm',fs(egrPend));
+  // s1-dp y s1-dd ya seteados arriba con valores correctos
+  set('s1-epa',fs(eActP));
+  set('s1-epv',fs(eVecP));
+  set('s1-epmn',EG.filter(r=>r.pago===null&&r.md===MK).length+' registros');
+
+// Tabla ingresos mes actual: pagos realizados EN este mes (ma===MK)
+  const normMK2=s=>{if(!s)return '';const p=s.split('-');return `${p[0]}-${(p[1]||'').padStart(2,'0')}`;};
+  const ingMesActual=DATOS.ingresos.filter(r=>normMK2(r.ma)===MK&&r.pago>0).sort((a,b)=>a.dpto-b.dpto);
+  document.getElementById('tb-ia').innerHTML=ingMesActual.length
+    ?ingMesActual.map(r=>`<tr>
+        <td class="dc">${r.dpto}</td>
+        <td>${mcel(r.ma)}</td>
+        <td>${mcel(r.md)}</td>
+        <td style="font-size:11px">${r.fp||'—'}</td>
+        <td class="r">${fs(r.pago)}</td>
+        <td>${r.md>MK?'<span class="badge bif">✓ Adelanto</span>':r.md<MK?'<span class="badge bwn">✓ Arrastre</span>':'<span class="badge bok">✓ Pagado</span>'}</td>
+      </tr>`).join('')
+    :'<tr><td colspan="6" style="text-align:center;color:#94A3B8;padding:14px">Sin ingresos cobrados este mes</td></tr>';
+
+  const ingVencidos=DATOS.ingresos.filter(r=>r.md<MK&&r.deuda>0&&r.pago===0).sort((a,b)=>a.dpto-b.dpto);
+  document.getElementById('tb-iv').innerHTML=ingVencidos.length
+    ?ingVencidos.map(r=>`<tr><td class="dc">${r.dpto}</td><td>${mcel(r.md)}</td><td class="r">${fs(r.deuda)}</td><td><span class="badge bpd">Pendiente</span></td></tr>`).join('')
+    :'<tr><td colspan="4" style="text-align:center;color:#94A3B8;padding:14px">Sin deudas de meses anteriores</td></tr>';
+
+  // ── Matriz de Deuda: todos los egresos sin pagar (cualquier mes) ──────
+  // Matriz deuda: TODOS los egresos sin pago, no solo del mes actual
+  // Igual que S5 — sin filtro de mes
+  const deudas=DATOS.egresos.filter(r=>r.pago===null);
+  const totMonto=deudas.reduce((s,r)=>s+r.monto,0);
+  const totDeuda=deudas.reduce((s,r)=>s+r.monto,0);
+  const tag=r=>{
+    const esPer=r.sub?.toLowerCase().includes('planilla')||r.sub?.toLowerCase().includes('personal');
+    return esPer
+      ?'<span class="tag" style="background:rgba(201,168,76,.15);color:#D97706;font-size:9px">Personal</span>'
+      :'<span class="tag" style="background:rgba(26,107,138,.12);color:#1A6B8A;font-size:9px">Servicios</span>';
+  };
+  document.getElementById('tb-s1-deuda').innerHTML=deudas.length
+    ?deudas.map(r=>`<tr>
+        <td>${tag(r)}</td>
+        <td style="font-size:11px">${r.sub||'—'}</td>
+        <td style="white-space:normal;word-break:break-word;font-size:11px">${r.tit||'—'}</td>
+        <td style="font-size:11px;text-align:right;font-family:monospace">${r.md?r.md.split('-')[0]:'—'}</td>
+        <td style="font-size:11px">${mcel(r.md)}</td>
+        <td class="r" style="font-family:monospace;font-size:11px">${(r.monto||0).toLocaleString('es-PE',{minimumFractionDigits:2})}</td>
+        <td class="r" style="font-family:monospace;font-size:11px;color:#94A3B8">0.00</td>
+        <td class="r" style="font-family:monospace;font-size:11px;color:#DC2626;font-weight:600">${(r.monto||0).toLocaleString('es-PE',{minimumFractionDigits:2})}</td>
+      </tr>`).join('')
+    :'<tr><td colspan="8" style="text-align:center;color:#94A3B8;padding:14px">Sin egresos pendientes</td></tr>';
+  const fmtN=n=>parseFloat(n||0).toLocaleString('es-PE',{minimumFractionDigits:2});
+  set('s1-tot-monto', fmtN(totMonto));
+  set('s1-tot-deuda', fmtN(totDeuda));
+  set('s1-deuda-count', deudas.length+' registros');
+
+  // Tabla egresos mes actual: mDev=MK, pago registrado
+  const eaT=EG.filter(r=>r.pago!==null&&r.md===MK);
+  document.getElementById('tb-ea').innerHTML=eaT.length
+    ?eaT.map(r=>`<tr><td>${mcel(r.ma)}</td><td>${mcel(r.md)}</td><td style="white-space:normal;word-break:break-word">${r.tit}</td><td class="r">${fs(r.pago)}</td></tr>`).join('')
+    :'<tr><td colspan="4" style="text-align:center;color:#94A3B8;padding:14px">Sin egresos pagados</td></tr>';
+
+  // Tabla egresos mes vencido: mDev < MK, pago registrado
+  const evT=EG.filter(r=>r.pago!==null&&r.md<MK);
+  document.getElementById('tb-ev').innerHTML=evT.length
+    ?evT.map(r=>`<tr><td>${mcel(r.ma)}</td><td>${mcel(r.md)}</td><td style="white-space:normal;word-break:break-word">${r.tit}</td><td class="r">${fs(r.pago)}</td><td><span class="badge bwn">${ddays(r.ma,r.md)}d</span></td></tr>`).join('')
+    :'<tr><td colspan="5" style="text-align:center;color:#94A3B8;padding:14px">Sin pagos de meses anteriores</td></tr>';
+}
+
+/* ── S2 ─────────────────────────────────────────── */
+function renderS2(MK){
+  if(!MK){const f=getF();MK=f.MK;}
+  const dptoSel=document.getElementById('s2-dpto').value;
+  const ING=DATOS.ingresos;
+  const DLIST=[201,301,401,501,601,701,801,901,1001,1101,1201,1301,1401,1501,1601,1701,1801];
+
+  // Construir filas: una por cada registro de ingreso relevante por dpto
+  // Mostrar:
+  // 1. Pagos realizados EN el mes seleccionado (ma===MK), cualquier devengue
+  // 2. Deudas pendientes con devengue <= mes seleccionado
+  let rows=[];
+  const dptosFiltro=dptoSel==='todos'?DLIST:[parseInt(dptoSel)];
+
+  dptosFiltro.forEach(d=>{
+    const tarifa=d===1801?1200:600;
+
+    // 1. Pagos realizados EN el mes seleccionado (ma===MK), cualquier devengue
+    // Incluye adelantos (md>MK) y pagos de deudas anteriores (md<MK)
+    const normMK=s=>{if(!s)return '';const p=s.split('-');return `${p[0]}-${(p[1]||'').padStart(2,'0')}`;};
+    const pagosDelMes=ING.filter(r=>normMK(r.ma)===MK&&r.dpto===d&&r.pago>0);
+    pagosDelMes.forEach(r=>rows.push({
+      dpto:d, tarifa, devengue:r.md, fp:r.fp,
+      pago:r.pago, deuda:0, estado:'pagado',
+      esAdelanto:r.md>MK // pagó un mes futuro por adelantado
+    }));
+
+    // 2. Deudas pendientes: devengue exactamente del mes seleccionado sin pago
+    // (no arrastrar meses anteriores aquí — solo el mes actual pendiente)
+    const pagosDptoCualqMes=ING.filter(r=>r.dpto===d&&r.md===MK&&r.pago>0);
+    const yaPagoEsteMes=pagosDptoCualqMes.length>0;
+    if(!yaPagoEsteMes){
+      // Solo mostrar pendiente del mes seleccionado si no pagó ese devengue
+      const deudaMes=ING.filter(r=>r.dpto===d&&r.md===MK&&r.deuda>0);
+      deudaMes.forEach(r=>rows.push({
+        dpto:d, tarifa, devengue:r.md, fp:null,
+        pago:0, deuda:r.deuda, estado:'pendiente',
+        esAdelanto:false
+      }));
+      // Si no hay registro del mes seleccionado para este dpto → pendiente
+      if(deudaMes.length===0){
+        rows.push({dpto:d, tarifa, devengue:MK, fp:null,
+          pago:0, deuda:tarifa, estado:'pendiente', esAdelanto:false});
+      }
+    }
+
+    // 3. Deudas de meses ANTERIORES sin pagar (arrastre)
+    const deudasAnt=ING.filter(r=>r.dpto===d&&r.md<MK&&r.deuda>0&&r.pago===0);
+    deudasAnt.forEach(r=>rows.push({
+      dpto:d, tarifa, devengue:r.md, fp:null,
+      pago:0, deuda:r.deuda, estado:'pendiente',
+      esAdelanto:false, esArrastre:true
+    }));
+  });
+
+  // Ordenar: pagados primero, luego pendientes; dentro de cada grupo por dpto
+  rows.sort((a,b)=>{
+    if(a.estado!==b.estado) return a.estado==='pagado'?-1:1;
+    return a.dpto-b.dpto||a.devengue?.localeCompare(b.devengue||'');
+  });
+
+  const tCob=rows.filter(r=>r.estado==='pagado').reduce((s,r)=>s+r.pago,0);
+  const tPend=rows.filter(r=>r.estado==='pendiente').reduce((s,r)=>s+r.deuda,0);
+  const nPend=new Set(rows.filter(r=>r.estado==='pendiente').map(r=>r.dpto)).size;
+
+  set('s2-pt','Ingresos — '+(dptoSel==='todos'?'todos los dptos':'Dpto '+dptoSel));
+  set('topbar-dpto',dptoSel==='todos'?'Todos los dptos':'Dpto '+dptoSel);
+  document.getElementById('s2-kpis').innerHTML=`
+    <div class="kpi ocean"><div class="kpi-lbl">Cuota esperada</div><div class="kpi-val">${fs(dptoSel==='todos'?DATOS.presup_ing:rows[0]?.tarifa||600)}</div></div>
+    <div class="kpi green"><div class="kpi-lbl">Total cobrado</div><div class="kpi-val">${fs(tCob)}</div></div>
+    <div class="kpi amber"><div class="kpi-lbl">Total pendiente</div><div class="kpi-val">${fs(tPend)}</div></div>
+    <div class="kpi red"><div class="kpi-lbl">Dptos con deuda</div><div class="kpi-val">${nPend}</div></div>`;
+
+  document.getElementById('tb-s2').innerHTML=rows.length?rows.map(r=>`<tr>
+    <td class="dc">${r.dpto}</td>
+    <td>${mcel(r.devengue||MK)}</td>
+    <td style="font-size:11px">${r.fp||'<span style="font-size:10px;font-style:italic;color:#94A3B8">Pendiente</span>'}</td>
+    <td class="r">${fs(r.tarifa)}</td>
+    <td class="r">${r.pago>0?fs(r.pago):'—'}</td>
+    <td>${r.estado==='pagado'
+      ?`<span class="badge bok">${r.esAdelanto?'✓ Adelanto':'✓ Pagado'}</span>`
+      :r.esArrastre
+        ?'<span class="badge bwn">Arrastre</span>'
+        :'<span class="badge bpd">Pendiente</span>'}</td>
+  </tr>`).join('')
+  :'<tr><td colspan="6" style="text-align:center;color:#94A3B8;padding:14px">Sin registros</td></tr>';
+
+  const pg=new Set(rows.filter(r=>r.estado==='pagado').map(r=>r.dpto)).size;
+  set('s2-fn',`${rows.length} registros · ${pg} dptos pagados · ${nPend} dptos con deuda pendiente`);
+}
+
+/* ── S3 ─────────────────────────────────────────── */
+function renderS3(month){
+  const items=DATOS.mant;
+  const total=items.reduce((s,i)=>s+i.prog,0);
+  const ej=items.filter(i=>i.amarillo).length;
+  const mR=items.filter(i=>i.amarillo).reduce((s,i)=>s+i.prog,0);
+  const pct=total>0?Math.round(mR/total*100):0;
+  const MK=mk(parseInt(document.getElementById('g-year').value),month);
+  set('s3-pt',`Plan de mantenimiento — ${ML[month]} ${MK.split('-')[0]}`);
+  document.getElementById('s3-kpis').innerHTML=`
+    <div class="kpi teal"><div class="kpi-lbl">Ítems programados</div><div class="kpi-val">${items.length}</div></div>
+    <div class="kpi gold"><div class="kpi-lbl">Total programado</div><div class="kpi-val">${fs(total)}</div></div>
+    <div class="kpi green"><div class="kpi-lbl">Ejecutados</div><div class="kpi-val">${ej}
+      <div style="height:4px;background:var(--border);border-radius:2px;margin-top:5px;overflow:hidden"><div style="height:4px;border-radius:2px;background:#16A34A;width:${pct}%"></div></div>
+      <div style="font-size:10px;color:var(--text-soft);margin-top:2px">${pct}% · ${fs(mR)}</div></div></div>
+    <div class="kpi red"><div class="kpi-lbl">Pendientes</div><div class="kpi-val">${items.length-ej}</div></div>`;
+  const s=[...items].sort((a,b)=>(a.amarillo?1:0)-(b.amarillo?1:0)||a.pri-b.pri);
+  document.getElementById('tb-s3').innerHTML=s.map(r=>{
+    const col=r.amarillo?'#16A34A':'#C0C0C0';
+    return `<tr>
+      <td style="font-size:9.5px;color:var(--text-soft)">${r.area}</td>
+      <td>${pb(r.pri)}</td>
+      <td style="white-space:normal;word-break:break-word">
+        <span style="font-size:9px;color:#94A3B8">${r.cod}</span>
+        <span class="${r.amarillo?'cell-am':'cell-bl'}"></span>${r.item}
+      </td>
+      <td class="r">${fs(r.prog)}</td>
+      <td><div class="progw">
+        <div class="progbg"><div class="progfill" style="width:${r.amarillo?100:0}%;background:${col}"></div></div>
+        <span class="proglbl" style="color:${col}">${r.amarillo?100:0}%</span>
+        <span class="badge ${r.amarillo?'bok':'bpd'}" style="margin-left:4px">${r.amarillo?'Ejecutado':'Pendiente'}</span>
+      </div></td>
+    </tr>`;
+  }).join('');
+  set('s3-fn',`${items.length} ítems · ${ej} ejecutados · ${items.length-ej} pendientes`);
+}
+
+/* ── S4 ─────────────────────────────────────────── */
+
+// Saldo inicial de un mes: el del Excel si existe; si no, el saldo final del mes anterior (inicial + ingresos cobrados − egresos pagados)
+function saldoIniDe(MK,_n){
+  const t=DATOS.saldos_por_mes||{};
+  if(t[MK])return t[MK];
+  const keys=Object.keys(t).filter(k=>t[k]);
+  if(!keys.some(k=>k<MK)||(_n||0)>36)return DATOS.saldo_ini;
+  const [y,m]=MK.split('-').map(Number);
+  const pm=m===1?mk(y-1,12):mk(y,m-1);
+  const nz=x=>{if(!x)return '';const q=x.split('-');return q[0]+'-'+(q[1]||'').padStart(2,'0');};
+  const ing=(DATOS.ingresos||[]).filter(r=>r.ma===pm&&r.pago>0).reduce((a,r)=>a+r.pago,0);
+  const eg=(DATOS.egresos||[]).filter(r=>nz(r.ma)===pm&&r.pago!==null).reduce((a,r)=>a+r.pago,0);
+  return saldoIniDe(pm,(_n||0)+1)+ing-eg;
+}
+function s7Pdf(){
+  const tb=document.getElementById('tb-s7');
+  if(!tb||!tb.innerHTML){alert('Abre primero la sección Flujo de Caja');return;}
+  const titulo=document.getElementById('s7-pt').textContent;
+  const kp=[...document.querySelectorAll('#s7-kpis .kpi')].map(k=>{
+    const q=c=>(k.querySelector(c)||{}).textContent||'';
+    const col=(k.querySelector('.kpi-value')||{style:{}}).style.color||'#0D1B2A';
+    return '<div class="k"><div class="kl">'+q('.kpi-label')+'</div><div class="kv" style="color:'+col+'">'+q('.kpi-value')+'</div><div class="ks">'+q('.kpi-sub')+'</div></div>';}).join('');
+  const cob=(document.getElementById('s7-cob')||{}).value||'100';
+  const fe=new Date().toLocaleDateString('es-PE',{day:'2-digit',month:'long',year:'numeric'});
+  const css='@page{size:A4 portrait;margin:14mm}*{box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;color:#0D1B2A;margin:0;padding:0;font-size:11px}'
+   +'.hd{border-bottom:3px solid #0D1B2A;padding-bottom:8px;margin-bottom:12px}.hd .e{font-size:10px;letter-spacing:.12em;color:#8A6D1D;text-transform:uppercase;font-weight:700}.hd h1{font-size:18px;margin:3px 0 2px}.hd .p{font-size:11px;color:#475569}'
+   +'.ks4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}.k{border:1px solid #CBD5E1;border-radius:6px;padding:8px}.kl{font-size:9px;color:#64748B;text-transform:uppercase;letter-spacing:.04em}.kv{font-size:14px;font-weight:700;margin:3px 0}.ks{font-size:8.5px;color:#64748B}'
+   +'table{width:100%;border-collapse:collapse;font-size:11px}th{background:#0D1B2A;color:#fff;padding:6px 8px;text-align:left;font-size:10px}th.r,td.r{text-align:right}td{padding:5px 8px;border-bottom:1px solid #E2E8F0}'
+   +'.ley{margin-top:10px;font-size:8px;color:#94A3B8;line-height:1.45}.ft{margin-top:12px;border-top:1px solid #CBD5E1;padding-top:6px;font-size:8.5px;color:#64748B;display:flex;justify-content:space-between}'
+   +'.bar{position:fixed;top:10px;right:10px;display:flex;gap:8px}@media print{.bar{display:none}}';
+  const bar='<div class="bar"><button onclick="window.print()" style="padding:8px 16px;background:#1A6B8A;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🖨 Imprimir / PDF</button><button onclick="window.close()" style="padding:8px 16px;background:#DC2626;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">✕ Cerrar</button></div>';
+  const ley=(document.getElementById('s7-ley')||{}).innerHTML||'';
+  const doc='<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Flujo de Caja — Edificio Costa Azul</title><style>'+css+'</style></head><body>'+bar
+   +'<div class="hd"><div class="e">Edificio Costa Azul · Junta de Propietarios</div><h1>Flujo de Caja</h1><div class="p">'+titulo.replace(/^Flujo de caja\s*·\s*/i,'')+' · cobranza supuesta de cuotas: '+cob+'%</div></div>'
+   +'<div class="ks4">'+kp+'</div>'
+   +'<table>'+document.getElementById('s7-th').innerHTML+tb.innerHTML+'</table>'
+   +'<div class="ley">'+ley+'</div>'
+   +'<div class="ft"><span>Montos marcados con ~ son supuestos y se actualizan al registrarse en el Excel.</span><span>Emitido: '+fe+'</span></div></body></html>';
+  const win=window.open('','_blank');
+  if(!win){alert('Permite las ventanas emergentes para generar el PDF');return;}
+  win.document.write(doc);win.document.close();
+}
+function renderS7(MK){
+  if(!MK){const f=getF();MK=f.MK;}
+  const norm=x=>{if(!x)return '';const p=x.split('-');return p[0]+'-'+(p[1]||'').padStart(2,'0');};
+  const [yy,mm]=MK.split('-').map(Number);
+  const nm=mm===12?1:mm+1, ny=mm===12?yy+1:yy, NK=mk(ny,nm);
+  const lblA=ML[mm]+' '+yy, lblN=ML[nm]+' '+ny;
+  const ING=DATOS.ingresos||[], EG=DATOS.egresos||[];
+  const cob=Math.min(100,Math.max(0,parseFloat((document.getElementById('s7-cob')||{}).value)||0))/100;
+  const _h=new Date();const hoyMK=mk(_h.getFullYear(),_h.getMonth()+1);const cerrado=MK<hoyMK; // mes terminado: ya no hay abonos supuestos
+  const dayOf=fp=>{const n=parseInt(fp);return (isNaN(n)||n<1||n>31)?null:n;};
+  const qOf=d=>d<=15?1:2;
+  const DL=[201,301,401,501,601,701,801,901,1001,1101,1201,1301,1401,1501,1601,1701,1801];
+  // quincena habitual por dpto (mediana del día de pago en los últimos 6 abonos anteriores al mes)
+  const habit=d=>{
+    const h=ING.filter(r=>r.dpto===d&&r.pago>0&&norm(r.ma)<MK&&dayOf(r.fp)).sort((a,b)=>norm(a.ma)<norm(b.ma)?-1:1).slice(-6).map(r=>dayOf(r.fp)).sort((a,b)=>a-b);
+    if(!h.length)return null;
+    return qOf(h[Math.floor((h.length-1)/2)]);
+  };
+  // --- por departamento
+  const filas=DL.map(d=>{
+    const firm={1:0,2:0};
+    ING.filter(r=>r.dpto===d&&norm(r.ma)===MK&&r.pago>0).forEach(r=>{const dd=dayOf(r.fp);firm[dd?qOf(dd):2]+=r.pago;});
+    const regCuota=ING.filter(r=>r.dpto===d&&norm(r.md)===MK);
+    const tarifa=(regCuota[0]&&regCuota[0].tarifa)||(ING.filter(r=>r.dpto===d).slice(-1)[0]||{}).tarifa||(d===1801?1200:600);
+    const pagadoCuota=regCuota.reduce((t,r)=>t+(r.pago||0),0);
+    const pendA=Math.max(0,tarifa-pagadoCuota);
+    const q=habit(d);
+    const sup={1:0,2:0};
+    if(!cerrado&&pendA>0.009)sup[q||2]+=pendA;
+    const nxt={1:0,2:0};
+    const adel=ING.filter(r=>r.dpto===d&&norm(r.md)===NK&&r.pago>0&&norm(r.ma)<=MK).reduce((t,r)=>t+r.pago,0); // cuota del mes siguiente ya cobrada por adelantado
+    nxt[q||2]=Math.max(0,tarifa*cob-adel);
+    return {d,firm,sup,nxt,q};
+  });
+  const sum=(k,g)=>filas.reduce((t,f)=>t+f[k][g],0);
+  const firmA=sum('firm',1)+sum('firm',2), supA=sum('sup',1)+sum('sup',2), nxtN=sum('nxt',1)+sum('nxt',2);
+  // --- egresos
+  const CATS=['Porteros · Q1','Porteros · Q2','Luz del Sur','Sedapal (agua)','Contador','Lift Perú','Otros egresos'];
+  const RECUR=CATS.slice(0,6); // categorías fijas/recurrentes que se proyectan
+  const qDeEg=r=>{const m=(r.tit||'').match(/\bQ([12])\b/i);if(m)return +m[1];const dd=r.fpd?parseInt(r.fpd.slice(8,10)):31;return dd<=15?1:2;};
+  const catOf=r=>{const t=((r.tit||'')+' '+(r.sub||'')).toLowerCase();
+    if(/rafael|hern[aá]n|portero/.test(t))return qDeEg(r)===1?CATS[0]:CATS[1];
+    if(/luz del sur/.test(t))return CATS[2];
+    if(/sedapal|agua/.test(t))return CATS[3];
+    if(/contador|contab/.test(t))return CATS[4];
+    if(/lift/.test(t))return CATS[5];
+    return CATS[6];};
+  const bySubA={};EG.filter(r=>norm(r.ma)===MK&&r.pago!==null).forEach(r=>{const k=catOf(r);bySubA[k]=(bySubA[k]||0)+r.pago;});
+  const totEgA=Object.values(bySubA).reduce((t,v)=>t+v,0);
+  // Egresos pendientes = programados (con Fecha Pago futura, en rojo en el Excel) y aún sin pago, ubicados por el mes de su Fecha Pago
+  const pendDe=m=>EG.filter(r=>r.pago===null&&r.fpd&&r.fpd.slice(0,7)===m&&(r.monto||0)>0);
+  const pendRows=cerrado?[]:pendDe(MK);
+  const pendA=pendRows.reduce((t,r)=>t+(r.monto||0),0);
+  const pendRowsN=pendDe(NK);
+  const pendN=pendRowsN.reduce((t,r)=>t+(r.monto||0),0);
+  // Proyección del mes siguiente: gastos recurrentes (último mes con registro) + pendientes ya programados para ese mes
+  const devMes=(k,m)=>EG.filter(r=>norm(r.md)===m&&catOf(r)===k).reduce((t,r)=>t+(r.monto||0),0);
+  const baseMes=[...new Set(EG.map(r=>norm(r.md)))].filter(m=>m&&(cerrado?m<=MK:m<MK)).sort();
+  // Egresos rutinarios: monto base = último mes con registro; quincena = la habitual de pago (mediana del día de pago de sus últimos 6 pagos)
+  const histQEg=k=>{
+    if(k===CATS[0])return 1; if(k===CATS[1])return 2;
+    const d=EG.filter(r=>catOf(r)===k&&r.pago!==null&&r.fpd).sort((a,b)=>a.fpd<b.fpd?-1:1).slice(-6).map(r=>parseInt(r.fpd.slice(8,10))).sort((a,b)=>a-b);
+    if(!d.length)return 2;
+    return d[Math.floor((d.length-1)/2)]<=15?1:2;};
+  const base={};
+  RECUR.forEach(k=>{let v=0;for(let x=baseMes.length-1;x>=0&&!v;x--)v=devMes(k,baseMes[x]);if(v)base[k]=v;});
+  // mes actual: lo rutinario que aún no se ha pagado (desaparece al registrarse el pago en el Excel)
+  const supEgA={1:0,2:0};
+  if(!cerrado)RECUR.forEach(k=>{const rest=Math.max(0,(base[k]||0)-(bySubA[k]||0));if(rest>0.009)supEgA[histQEg(k)]+=rest;});
+  const rutA=supEgA[1]+supEgA[2];
+  // mes siguiente: todo lo rutinario completo, en su quincena habitual
+  const supEgN={1:0,2:0};
+  RECUR.forEach(k=>{if(base[k])supEgN[histQEg(k)]+=base[k];});
+  const recN=supEgN[1]+supEgN[2];
+  const totEgN=recN+pendN;
+  const siA=saldoIniDe(MK); // misma regla que S1
+  const sfA=siA+firmA-totEgA, sfAexp=sfA+supA-pendA-rutA;
+  const netoN=nxtN-totEgN, sfN=sfAexp+netoN;
+  const morosa=ING.filter(r=>norm(r.md)<=MK&&r.deuda>0&&r.pago===0).reduce((t,r)=>t+r.deuda,0);
+  const col=v=>v>=0?'var(--green)':'var(--red)';
+  const kp=(t,v,sub,c)=>'<div class="kpi"><div class="kpi-label">'+t+'</div><div class="kpi-value" style="color:'+(c||'inherit')+'">'+fs(v)+'</div><div class="kpi-sub" style="font-size:11px;color:#64748B;margin-top:4px">'+sub+'</div></div>';
+  document.getElementById('s7-kpis').innerHTML=
+    kp('Saldo caja hoy · '+lblA,sfA,'Solo abonos firmes')
+   +kp('Saldo esperado fin de '+lblA,sfAexp,'+ ingresos supuestos '+fs(supA)+' − egresos por pagar '+fs(pendA+rutA),col(sfAexp))
+   +kp('Ingresos proyectados',nxtN,lblN+' · cobranza '+Math.round(cob*100)+'%')
+   +kp('Saldo caja proyectado',sfN,'Cierre de '+lblN,col(sfN));
+  document.getElementById('s7-pt').textContent='Flujo de caja · '+lblA+' (real) y '+lblN+' (proyección)';
+  document.getElementById('s7-th').innerHTML='<tr><th>Concepto</th><th class="r">'+lblA+' · Real</th><th class="r">'+lblN+' · Proyección</th></tr>';
+  const row=(c,a,n,o)=>{o=o||{};const st=o.b?'font-weight:700;background:var(--mist)':'';const ind=o.i?'padding-left:26px;':'';
+    const cc=o.sign?(v=>'color:'+col(v)+';'):(()=>'');
+    return '<tr style="'+st+'"><td style="text-align:left;'+ind+'">'+c+'</td><td class="r" style="'+cc(a)+'">'+fs(a)+'</td><td class="r" style="'+cc(n)+'">'+fs(n)+'</td></tr>';};
+  const sec=t=>'<tr><td colspan="3" style="text-align:left;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#64748B;background:#F8FAFC">'+t+'</td></tr>';
+  let h='';
+  h+=row('Saldo inicial',siA,sfAexp,{b:1});
+  h+=sec('Ingresos');
+  const rc=(c,a,n,color,it)=>'<tr><td style="text-align:left;padding-left:26px;color:'+color+(it?';font-style:italic':'')+'">'+c+'</td><td class="r" style="color:'+color+(it?';font-style:italic':'')+'">'+(a?fs(a):'—')+'</td><td class="r" style="color:'+color+(it?';font-style:italic':'')+'">'+(n?fs(n):'—')+'</td></tr>';
+  h+=rc('Q1 · abonos firmes',sum('firm',1),0,'#16A34A');
+  h+=rc('Q1 · abonos supuestos (~)',sum('sup',1),sum('nxt',1),'#D97706',1);
+  h+=rc('Q2 · abonos firmes',sum('firm',2),0,'#16A34A');
+  h+=rc('Q2 · abonos supuestos (~)',sum('sup',2),sum('nxt',2),'#D97706',1);
+  h+=row('Total ingresos',firmA+supA,nxtN,{b:1});
+  h+=sec('Egresos');
+  const subs=CATS.filter(k=>bySubA[k]);
+  subs.forEach(k=>{h+='<tr><td style="text-align:left;padding-left:26px">'+k+'</td><td class="r">'+fs(-bySubA[k])+'</td><td class="r">—</td></tr>';});
+  const ra=(c,a2,n2)=>(a2||n2)?'<tr><td style="text-align:left;padding-left:26px;color:#D97706;font-style:italic">'+c+'</td><td class="r" style="color:#D97706;font-style:italic">'+(a2?fs(-a2):'—')+'</td><td class="r" style="color:#D97706;font-style:italic">'+(n2?fs(-n2):'—')+'</td></tr>':'';
+  h+=ra('Rutinarios por pagar Q1 (~)',supEgA[1],supEgN[1]);
+  h+=ra('Rutinarios por pagar Q2 (~)',supEgA[2],supEgN[2]);
+  h+=ra('Pendientes programados (con fecha) ~',pendA,pendN);
+  h+=row('Total egresos',-(totEgA+pendA+rutA),-totEgN,{b:1});
+  h+=row('Flujo neto del mes',firmA+supA-totEgA-pendA-rutA,netoN,{b:1,sign:1});
+  h+=row('Saldo final de caja',sfAexp,sfN,{b:1,sign:1});
+  // Cuadre con S1 (misma fórmula que S1: ingresos cobrados EN el mes, egresos pagados del mes, saldo = inicial + ingresos − egresos)
+  const s1Ing=ING.filter(r=>r.ma===MK&&r.pago>0).reduce((t,r)=>t+r.pago,0);
+  const s1Eg=EG.filter(r=>norm(r.ma)===MK&&r.pago!==null).reduce((t,r)=>t+r.pago,0);
+  const s1Sc=siA+s1Ing-s1Eg;
+  const okI=Math.abs(s1Ing-firmA)<0.01, okE=Math.abs(s1Eg-totEgA)<0.01, okS=Math.abs(s1Sc-sfA)<0.01;
+  const okAll=okI&&okE&&okS;
+  h+='<tr><td colspan="3" style="text-align:left;font-size:12px;padding:8px 14px;background:'+(okAll?'#F0FDF4':'#FEF2F2')+';color:'+(okAll?'#166534':'#991B1B')+'">'
+    +(okAll?'✔ Cuadra con S1 ('+lblA+'): ingresos cobrados '+fs(s1Ing)+' · egresos pagados '+fs(s1Eg)+' · saldo caja '+fs(s1Sc)
+           :'✘ NO cuadra con S1 — ingresos S7 '+fs(firmA)+' vs S1 '+fs(s1Ing)+' · egresos S7 '+fs(totEgA)+' vs S1 '+fs(s1Eg)+' · saldo S7 '+fs(sfA)+' vs S1 '+fs(s1Sc))
+    +(cerrado?' · mes cerrado':' · mes en curso (el saldo esperado suma los abonos supuestos)')+'</td></tr>';
+  document.getElementById('tb-s7').innerHTML=h;
+  document.getElementById('s7-ley').innerHTML='<b>Q1</b> = días 1–15 · <b>Q2</b> = días 16–fin · <b style="color:#16A34A">verde</b> = firme (ya en el Excel) · <b style="color:#D97706">ámbar (~)</b> = supuesto, se retira solo al registrarse en el Excel.<br><b>Ingresos supuestos:</b> cuota de cada dpto en la quincena en que suele pagar (mediana de sus últimos 6 abonos); '+lblN+' = cuota × cobranza supuesta, descontando lo ya cobrado por adelantado. <b>Rutinarios:</b> porteros (Q1/Q2), Luz del Sur, Sedapal, Contador y Lift Perú, con el monto de su último mes registrado. <b>Pendientes programados:</b> egresos con Fecha Pago futura (rojo en el Excel) y sin pago, en el mes de esa fecha. La mora de meses anteriores no se proyecta; deuda pendiente por cobrar: <b>'+fs(morosa)+'</b>.';
+}
+
+function renderS4(MK,month){
+  const PINGI=DATOS.presup_ing;
+  const ingCob=DATOS.dptos.filter(d=>d.pagado).reduce((s,d)=>s+d.t,0);
+  // Normalizar: algunos registros pueden tener ma con formato diferente
+  const EG=DATOS.egresos.filter(r=>{
+    if(!r.ma) return false;
+    const maN=r.ma.split('-').map((p,i)=>i===0?p:p.padStart(2,'0')).join('-');
+    return maN===MK || r.ma===MK;
+  });
+  const sp=(fn)=>Math.round(EG.filter(r=>r.md===MK&&r.pago!==null&&fn(r)).reduce((s,r)=>s+r.pago,0)*100)/100;
+  const spM=()=>Math.round(DATOS.egresos.filter(r=>r.ma===MK&&r.sub==='Mantenimiento'&&r.pago!==null).reduce((s,r)=>s+r.pago,0)*100)/100;
+
+  const rmap={};
+  DATOS.presup.forEach(p=>{
+    if(p.sub==='Planilla Ordinaria') rmap[p.lb]=sp(r=>r.sub==='Planilla Ordinaria');
+    else if(p.sub==='Planilla domingo') rmap[p.lb]=sp(r=>r.sub==='Planilla domingo');
+    else if(p.kw==='luz') rmap[p.lb]=sp(r=>r.sub==='Basicos'&&r.tit.toLowerCase().includes('luz'));
+    else if(p.kw==='sedapal') rmap[p.lb]=sp(r=>r.sub==='Basicos'&&(r.tit.toLowerCase().includes('sedapal')||r.tit.toLowerCase().includes('agua')));
+    else if(p.kw==='telefonia') rmap[p.lb]=sp(r=>r.sub==='Basicos'&&r.tit.toLowerCase().includes('telefonia'));
+    else if(p.sub==='Insumos') rmap[p.lb]=sp(r=>r.sub==='Insumos');
+    else if(p.sub==='Mantenimiento') rmap[p.lb]=spM();
+    else rmap[p.lb]=0;
+  });
+
+  const tP=DATOS.presup.reduce((s,i)=>s+i.p,0);
+  const tR=Math.round(DATOS.presup.reduce((s,i)=>s+(rmap[i.lb]||0),0)*100)/100;
+  const sP=PINGI-tP, sR=ingCob-tR;
+
+  set('s4-pt',`Comparativo ${ML[month]} ${MK.split('-')[0]}`);
+  set('s4-sub','Presupuesto vs. pagado (mes devengue = mes actual)');
+  document.getElementById('s4-kpis').innerHTML=`
+    <div class="kpi ocean"><div class="kpi-lbl">Ingresos</div><div class="kpi-rows">
+      <div class="kpi-line"><span class="kpi-line-l">Presupuesto</span><span class="kpi-line-v">${fs(PINGI)}</span></div>
+      <div class="kpi-line"><span class="kpi-line-l">Real cobrado</span><span class="kpi-line-v">${fs(ingCob)}</span></div>
+      <div class="kpi-line"><span class="kpi-line-l">Alcance</span><span class="kpi-line-v">${Math.round(ingCob/PINGI*100)}%</span></div>
+    </div></div>
+    <div class="kpi red"><div class="kpi-lbl">Egresos</div><div class="kpi-rows">
+      <div class="kpi-line"><span class="kpi-line-l">Presupuesto</span><span class="kpi-line-v">${fs(tP)}</span></div>
+      <div class="kpi-line"><span class="kpi-line-l">Real pagado</span><span class="kpi-line-v">${fs(tR)}</span></div>
+      <div class="kpi-line"><span class="kpi-line-l">Alcance</span><span class="kpi-line-v">${tP>0?Math.round(tR/tP*100):0}%</span></div>
+    </div></div>
+    <div class="kpi ${sR>=0?'green':'red'}"><div class="kpi-lbl">Resultado</div><div class="kpi-rows">
+      <div class="kpi-line"><span class="kpi-line-l">Presupuestado</span><span class="kpi-line-v">${fs(sP)}</span></div>
+      <div class="kpi-line"><span class="kpi-line-l">Real</span><span class="kpi-line-v">${fs(sR)}</span></div>
+    </div></div>`;
+
+  let html='';
+  html+=`<tr class="grp"><td colspan="5">▸ Ingresos</td></tr>`;
+  html+=trow('Cuota ordinaria (17 dptos)',PINGI,ingCob);
+  html+=totrow('TOTAL INGRESOS',PINGI,ingCob);
+  const G={Personal:[],Servicios:[],Operaciones:[]};
+  DATOS.presup.forEach(p=>G[p.g]?G[p.g].push(p):G.Operaciones.push(p));
+  Object.entries(G).forEach(([g,its])=>{
+    if(!its.length) return;
+    html+=`<tr class="grp"><td colspan="5">▸ ${g}</td></tr>`;
+    its.forEach(i=>html+=trow(i.lb,i.p,rmap[i.lb]||0));
+    const gP=its.reduce((s,i)=>s+i.p,0), gR=Math.round(its.reduce((s,i)=>s+(rmap[i.lb]||0),0)*100)/100;
+    html+=totrow('Subtotal '+g,gP,gR);
+  });
+  html+=totrow('TOTAL EGRESOS',tP,tR);
+  html+=`<tr class="totm"><td>RESULTADO DEL MES</td><td class="r"><strong style="color:${sP>=0?'var(--green)':'var(--red)'}">${fs(sP)}</strong></td><td class="r"><strong style="color:${sR>=0?'var(--green)':'var(--red)'}">${fs(sR)}</strong></td><td class="r">${difc(sR-sP)}</td><td>${barra(Math.abs(sR),Math.abs(sP))}</td></tr>`;
+  document.getElementById('tb-s4').innerHTML=html;
+  set('s4-fn',`Fuente: Evaluación 600 · Real: devengue = ${ML[month]}`);
+}
+
+function trow(l,p,r){const d=r-p;return `<tr><td style="padding-left:18px">${l}</td><td class="r">${fs(p)}</td><td class="r" style="${r>p&&p>0?'color:var(--red);font-weight:600':r>0?'color:var(--green)':''}">${r>0?fs(r):'—'}</td><td class="r">${difc(d)}</td><td>${barra(r,p)}</td></tr>`;}
+function totrow(l,p,r){const d=r-p;return `<tr class="tot"><td><strong>${l}</strong></td><td class="r"><strong>${fs(p)}</strong></td><td class="r"><strong style="color:${r>p?'var(--red)':'var(--green)'}">${fs(r)}</strong></td><td class="r">${difc(d)}</td><td>${barra(r,p)}</td></tr>`;}
+function difc(d){const c=d<0?'var(--red)':d>0?'var(--green)':'#94A3B8';return `<span style="color:${c};font-weight:500">${d>=0?'+':''}${fs(d)}</span>`;}
+function barra(r,p){if(!p)return '—';const pct=Math.round(r/p*100);const col=pct<=0?'#C0C0C0':pct<80?'var(--amber)':pct<=110?'var(--green)':'var(--red)';return `<div class="progw"><div class="progbg"><div class="progfill" style="width:${Math.min(pct,100)}%;background:${col}"></div></div><span class="proglbl" style="color:${col}">${pct}%</span></div>`;}
+
+/* ── S5 ─────────────────────────────────────────── */
+function fechaEm(){const h=new Date();return String(h.getDate()).padStart(2,'0')+String(h.getMonth()+1).padStart(2,'0')+String(h.getFullYear()).slice(2);}
+
+function buildInforme(){
+  const y=parseInt(document.getElementById('r-year').value);
+  const m=parseInt(document.getElementById('r-month').value);
+  const sec=document.getElementById('r-sec').value;
+  const period=`${ML[m]} ${y}`, MK=mk(y,m), fe=fechaEm();
+  const secN=sec==='completo'?'Completo':sec;
+  const base=`InformeECA_${period.replace(/\s/g,'')}_${secN}_${fe}`;
+  set('r-fnames',`📄 ${base}.html   📋 ${base}.pdf`);
+  set('r-hint',`${secN} · ${period}`);
+
+  // Variables para KPIs
+  const EGmes=DATOS.egresos.filter(r=>{const n=s=>s?s.split('-').map((p,i)=>i?p.padStart(2,'0'):p).join('-'):'';return n(r.ma)===MK;});
+  const ING=DATOS.ingresos||[];
+  const deu=DATOS.dptos.filter(d=>!d.pagado);
+  // Ingresos cobrados: pagos realizados EN este mes
+  const ingCob=ING.filter(r=>r.ma===MK&&r.pago>0).reduce((s,r)=>s+r.pago,0)||DATOS.dptos.filter(d=>d.pagado).reduce((s,d)=>s+d.t,0);
+  const cxcT=deu.reduce((s,d)=>s+d.t,0);
+  // Egresos
+  // egrSP = TODOS los egresos sin pago (igual que Matriz Deuda S1, sin filtro de mes)
+  const egrSP=DATOS.egresos.filter(r=>r.pago===null);
+  const totM=egrSP.reduce((s,r)=>s+r.monto,0);
+  const sumPagMes=EGmes.filter(r=>r.pago!==null).reduce((s,r)=>s+r.pago,0);
+  // Saldo
+  const saldoIniInf=saldoIniDe(MK)||4614;
+  const saldoMesInf=ingCob-sumPagMes;
+  const saldoCajaInf=saldoIniInf+saldoMesInf;
+  // Ingresos pendientes (deuda mes actual)
+  // Ingresos pendientes: idéntico a S1
+  const ingPendRows2=ING.length>0
+    ?ING.filter(r=>r.md===MK&&r.deuda>0&&r.pago===0)
+    :DATOS.dptos.filter(d=>!d.pagado);
+  const ingPendInf=ING.length>0
+    ?ingPendRows2.reduce((s,r)=>s+r.deuda,0)
+    :ingPendRows2.reduce((s,d)=>s+d.t,0);
+  const dptosPendInf2=ING.length>0
+    ?new Set(ingPendRows2.map(r=>r.dpto)).size
+    :ingPendRows2.length;
+  // Egresos pendientes mes actual
+  const egrPendMesInf=EGmes.filter(r=>r.pago===null&&r.md===MK).reduce((s,r)=>s+r.monto,0);
+  // Dptos pagados/pendientes
+  const dptosPagInf=ING.filter(r=>r.md===MK&&r.pago>0).length>0
+    ?new Set(ING.filter(r=>r.md===MK&&r.pago>0).map(r=>r.dpto)).size
+    :DATOS.dptos.filter(d=>d.pagado).length;
+  // dptosPendInf2 ya calculado arriba
+  const fmtI=n=>'S/ '+parseFloat(n||0).toLocaleString('es-PE',{minimumFractionDigits:2});
+  const showA=sec==='completo'||sec==='A';
+  const showB=sec==='completo'||sec==='B';
+  const showC=sec==='completo'||sec==='C';
+  const showD=sec==='completo'||sec==='D';
+
+  // CxC: usar datos reales del Excel si están disponibles
+  const cxcData = DATOS.cxc && DATOS.cxc.length>0 ? DATOS.cxc : deu.map(d=>({dpto:d.d||d.dpto,meses:{[MK]:d.t},total:d.t}));
+  // CxC: mostrar solo dptos con deuda en el mes seleccionado (MK)
+  const cxcDelMes=cxcData.filter(r=>r.meses[MK]>0);
+  let cxcTheadFull, cxcRows;
+  if(cxcDelMes.length===0){
+    cxcTheadFull='<th>Dpto</th><th>Estado</th>';
+    cxcRows=`<tr><td colspan="2" style="text-align:center;padding:16px;color:#64748B;font-style:italic">Ningún departamento adeuda ${ML[m]} ${y}</td></tr>`;
+  } else {
+    cxcTheadFull=`<th>Dpto</th><th class="active-month">${ML[m]} ${y}</th><th class="total-col">Total</th>`;
+    cxcRows=cxcDelMes.map(r=>`<tr>
+      <td>${r.dpto}</td>
+      <td class="active-month">${r.meses[MK].toLocaleString('es-PE')}</td>
+      <td class="total-col">${r.meses[MK].toLocaleString('es-PE')}</td>
+    </tr>`).join('');
+  }
+  const egrRows=egrSP.map(r=>`<tr><td style="text-align:left"><span class="tag ${r.sub?.toLowerCase().includes('planilla')?'tag-per':'tag-svc'}">${r.sub?.toLowerCase().includes('planilla')?'Personal':'Servicios'}</span></td><td style="text-align:left">${r.sub}</td><td style="text-align:left">${r.tit}</td><td>${r.md?.split('-')[0]||''}</td><td>${r.md?MS[+r.md.split('-')[1]]+' '+r.md.split('-')[0]:''}</td><td>${(r.monto||0).toLocaleString('es-PE',{minimumFractionDigits:2})}</td><td class="text-zero">0</td><td class="col-deuda">${(r.monto||0).toLocaleString('es-PE',{minimumFractionDigits:2})}</td></tr>`).join('');
+
+  const HTML=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>:root{--ink:#0D1B2A;--slate:#1E3A5F;--ocean:#1A6B8A;--gold:#C9A84C;--gold-light:#F0D080;--amber:#D97706;--red:#DC2626;--green:#16A34A;--mist:#EEF4FB;--mist2:#F5F8FC;--silver:#94A3B8;--border:#DDE6F0;--text:#1E293B;--text-soft:#64748B;--font-display:'DM Serif Display',serif;--font-body:'Outfit',sans-serif;--font-mono:'DM Mono',monospace;--r:12px;--r-lg:18px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font-body);background:#F0F4F9;color:var(--text);line-height:1.5}.page{max-width:1100px;margin:0 auto;padding:28px 24px 50px}
+.header{background:var(--ink);border-radius:var(--r-lg);padding:24px 32px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}.header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold))}
+.header-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:5px}.header-title{font-family:var(--font-display);font-size:26px;color:#fff;line-height:1.15}.header-subtitle{font-size:12px;color:var(--silver);margin-top:3px}.header-fecha{font-family:var(--font-mono);font-size:10px;color:rgba(201,168,76,.5);margin-top:5px}
+.header-badge{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.35);border-radius:var(--r);padding:12px 20px;text-align:center;flex-shrink:0}.header-badge-period{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:500}.header-badge-author{font-size:11px;color:var(--silver);margin-top:3px}
+.section-label{display:flex;align-items:center;gap:10px;margin-bottom:12px;margin-top:24px}.section-label-bar{width:4px;height:20px;border-radius:2px;flex-shrink:0}.section-label-bar.ocean{background:var(--ocean)}.section-label-bar.gold{background:var(--gold)}.section-label-bar.red{background:var(--red)}.section-label-text{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text-soft)}.section-label-sub{font-size:11px;color:var(--silver);margin-left:auto}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:4px}.kpi-card{background:#fff;border-radius:var(--r);padding:18px;border:1px solid var(--border);position:relative;overflow:hidden}.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}.kpi-card.ocean::before{background:var(--ocean)}.kpi-card.red::before{background:var(--red)}.kpi-card.green::before{background:var(--green)}
+.kpi-label{font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--text-soft);margin-bottom:8px}.kpi-value{font-family:var(--font-display);font-size:24px;line-height:1;margin-bottom:10px}.kpi-card.ocean .kpi-value{color:var(--ocean)}.kpi-card.red .kpi-value{color:var(--red)}.kpi-card.green .kpi-value{color:var(--green)}
+.kpi-rows{display:flex;flex-direction:column;gap:4px}.kpi-row{display:flex;justify-content:space-between;font-size:12px}.kpi-row-label{color:var(--text-soft)}.kpi-row-value{font-weight:500;font-family:var(--font-mono);font-size:11px;color:var(--text)}
+.balance-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.balance-card{background:#fff;border-radius:var(--r);padding:16px;border:1px solid var(--border)}.balance-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-soft);margin-bottom:7px}.balance-value{font-family:var(--font-display);font-size:20px;margin-bottom:10px}.balance-card.gold-accent .balance-value{color:var(--amber)}.balance-card.ocean-accent .balance-value{color:var(--ocean)}.balance-card.red-accent .balance-value{color:var(--red)}.balance-divider{height:1px;background:var(--border);margin-bottom:8px}.balance-rows{display:flex;flex-direction:column;gap:5px}.balance-row{display:flex;justify-content:space-between;font-size:12px}.balance-row-label{color:var(--text-soft)}.balance-row-value{font-weight:500;font-family:var(--font-mono);font-size:11px;color:var(--text)}
+.table-section{background:#fff;border-radius:var(--r);border:1px solid var(--border);overflow:hidden}.table-header-bar{background:var(--slate);padding:9px 16px;display:flex;align-items:center;justify-content:space-between}.table-header-bar-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff}.table-header-bar-sub{font-size:10px;color:rgba(255,255,255,.5);font-family:var(--font-mono)}
+table{width:100%;border-collapse:collapse;font-size:11.5px}thead th{background:var(--mist);padding:7px 9px;font-size:9.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-soft);text-align:right;border-bottom:1px solid var(--border)}thead th:first-child{text-align:left;padding-left:16px}tbody tr{border-bottom:1px solid var(--border)}tbody td{padding:6px 9px;text-align:right;color:var(--text-soft);font-family:var(--font-mono);font-size:11px}tbody td:first-child{text-align:left;padding-left:16px;font-family:var(--font-body);font-weight:500;color:var(--text)}
+td.active-month,th.active-month{background:rgba(201,168,76,.1);color:var(--amber)!important;font-weight:600}td.total-col,th.total-col{background:var(--mist);color:var(--ocean)!important;font-weight:600}
+.egresos-table thead th{background:#1A3A5C;color:rgba(255,255,255,.8)}.col-deuda{color:var(--red)!important;font-weight:600}.egresos-table tfoot td{background:var(--ink);color:#fff;font-weight:600;font-family:var(--font-mono);font-size:11.5px;padding:8px 9px;text-align:right;border-top:2px solid var(--slate)}.egresos-table tfoot td:first-child{font-size:10px;color:var(--silver)}
+.tag{display:inline-block;padding:2px 7px;border-radius:20px;font-size:9.5px;font-weight:600}.tag-svc{background:rgba(26,107,138,.12);color:var(--ocean)}.tag-per{background:rgba(201,168,76,.12);color:var(--amber)}
+.footer{display:flex;justify-content:space-between;align-items:center;margin-top:28px;padding-top:16px;border-top:1px solid var(--border)}.footer-left{font-size:11px;color:var(--silver)}.footer-left strong{color:var(--text-soft)}.footer-confidential{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-soft);background:var(--mist);border:1px solid var(--border);padding:4px 11px;border-radius:20px}
+.gap-top{margin-top:12px}.text-zero{color:var(--silver)!important}@media print{body{background:#fff}.page{padding:10px 16px 30px}}</style></head><body><div class="page">
+<header class="header"><div><div class="header-eyebrow">Informe Económico</div><div class="header-title">Edificio Costa Azul</div><div class="header-subtitle">Elaborado por Myriam Abugattas — Tesorera</div><div class="header-fecha">Emitido: ${fe.slice(0,2)}/${fe.slice(2,4)}/${fe.slice(4)}</div></div><div class="header-badge"><div class="header-badge-period">${period}</div><div class="header-badge-author">Período activo</div></div></header>
+${showA?`
+<div class="section-label"><div class="section-label-bar ocean"></div><div class="section-label-text">A. Caja y Bancos</div><div class="section-label-sub">${period}</div></div>
+<div class="kpi-grid">
+  <div class="kpi-card ocean">
+    <div class="kpi-label">Ingresos Cobrados</div>
+    <div class="kpi-value" style="color:var(--ocean)">${fmtI(ingCob)}</div>
+    <div class="kpi-rows">
+      <div class="kpi-row"><span class="kpi-row-label">Dptos pagados</span><span class="kpi-row-value">${dptosPagInf} de 17</span></div>
+    </div>
+  </div>
+  <div class="kpi-card red">
+    <div class="kpi-label">Egresos Pagados</div>
+    <div class="kpi-value" style="color:var(--red)">${fmtI(sumPagMes)}</div>
+    <div class="kpi-rows">
+      <div class="kpi-row"><span class="kpi-row-label">Dev. mes actual</span><span class="kpi-row-value">${fmtI(EGmes.filter(r=>r.pago!==null&&r.md===MK).reduce((s,r)=>s+r.pago,0))}</span></div>
+      <div class="kpi-row"><span class="kpi-row-label">Dev. meses ant.</span><span class="kpi-row-value">${fmtI(EGmes.filter(r=>r.pago!==null&&r.md<MK).reduce((s,r)=>s+r.pago,0))}</span></div>
+    </div>
+  </div>
+  <div class="kpi-card green">
+    <div class="kpi-label">Saldo del Mes</div>
+    <div class="kpi-value" style="color:${saldoMesInf>=0?'var(--green)':'var(--red)'}">${fmtI(saldoMesInf)}</div>
+    <div class="kpi-rows">
+      <div class="kpi-row"><span class="kpi-row-label">Saldo inicial</span><span class="kpi-row-value">${fmtI(saldoIniInf)}</span></div>
+      <div class="kpi-row"><span class="kpi-row-label">Saldo caja</span><span class="kpi-row-value">${fmtI(saldoCajaInf)}</span></div>
+    </div>
+  </div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px">
+  <div class="kpi-card" style="border-top:3px solid var(--amber)">
+    <div class="kpi-label">Ingresos Pendientes</div>
+    <div class="kpi-value" style="color:var(--amber)">${fmtI(ingPendInf)}</div>
+    <div class="kpi-rows">
+      <div class="kpi-row"><span class="kpi-row-label">Dptos deudores</span><span class="kpi-row-value">${dptosPendInf2} de 17</span></div>
+    </div>
+  </div>
+  <div class="kpi-card" style="border-top:3px solid var(--amber)">
+    <div class="kpi-label">Egresos Pendientes del Mes</div>
+    <div class="kpi-value" style="color:var(--amber)">${fmtI(egrPendMesInf)}</div>
+    <div class="kpi-rows">
+      <div class="kpi-row"><span class="kpi-row-label">Sin pago, dev. mes actual</span><span class="kpi-row-value">${EGmes.filter(r=>r.pago===null&&r.md===MK).length} registros</span></div>
+    </div>
+  </div>
+</div>
+`:''}
+
+${showB?`
+<div class="section-label"><div class="section-label-bar gold"></div><div class="section-label-text">B. Cuentas por Cobrar Detallado</div></div>
+<div class="table-section gap-top"><div class="table-header-bar"><span class="table-header-bar-title">Detalle CxC por Departamento</span><span class="table-header-bar-sub">${period}</span></div>
+<table><thead><tr>${cxcTheadFull}</tr></thead><tbody>${cxcRows}</tbody></table></div>
+`:''}
+
+${showC?`<div class="section-label"><div class="section-label-bar red"></div><div class="section-label-text">C. Egresos Pendientes de Pago</div></div>
+<div class="table-section">
+  <div class="table-header-bar" style="background:#1A3A5C;display:flex;align-items:center;justify-content:space-between">
+    <span class="table-header-bar-title">Matriz de Deuda — Egresos Pendientes de Pago</span>
+    <span class="table-header-bar-sub">${egrSP.length} registros</span>
+  </div>
+  <table class="egresos-table">
+    <thead><tr>
+      <th style="text-align:left;width:10%">Rubro</th>
+      <th style="text-align:left;width:15%">Sub-Rubro</th>
+      <th style="text-align:left;width:27%">Titular</th>
+      <th style="width:7%">Año</th>
+      <th style="width:11%">Mes Dev.</th>
+      <th style="text-align:right;width:10%">Monto</th>
+      <th style="text-align:right;width:9%">Pago</th>
+      <th style="text-align:right;width:11%">Deuda</th>
+    </tr></thead>
+    <tbody>${egrRows}</tbody>
+    <tfoot><tr>
+      <td colspan="5" style="text-align:right;font-size:10px;color:#94A3B8">TOTAL</td>
+      <td style="text-align:right;font-weight:700">${totM.toLocaleString('es-PE',{minimumFractionDigits:2})}</td>
+      <td style="text-align:right;color:rgba(255,255,255,.4)">0.00</td>
+      <td style="text-align:right;color:#FCA5A5;font-weight:700">${totM.toLocaleString('es-PE',{minimumFractionDigits:2})}</td>
+    </tr></tfoot>
+  </table>
+</div>`:''}
+${(()=>{
+  if(!showD) return '';
+  const egPag=EGmes.filter(r=>r.pago!==null&&r.pago>0);
+  const totPag=egPag.reduce((s,r)=>s+(r.pago||0),0);
+  const rowsPag=egPag.map(r=>{const per=(r.sub||'').toLowerCase().includes('planilla');return '<tr>'
+    +'<td style="text-align:left"><span class="tag '+(per?'tag-per':'tag-svc')+'">'+(per?'Personal':'Servicios')+'</span></td>'
+    +'<td style="text-align:left">'+(r.sub||'')+'</td>'
+    +'<td style="text-align:left">'+(r.tit||'')+'</td>'
+    +'<td style="text-align:center">'+(r.md?r.md.split('-')[0]:'')+'</td>'
+    +'<td style="text-align:center">'+(r.md?MS[+r.md.split('-')[1]]:'')+'</td>'
+    +'<td style="text-align:right">'+(r.monto||0).toLocaleString('es-PE',{minimumFractionDigits:2})+'</td>'
+    +'<td style="text-align:right;color:#16A34A;font-weight:600">'+(r.pago||0).toLocaleString('es-PE',{minimumFractionDigits:2})+'</td>'
+    +'</tr>';}).join('');
+  return '<div class="section-label"><div class="section-label-bar" style="background:#16A34A"></div><div class="section-label-text">D. Egresos Realizados — '+period+'</div></div>'
+    +'<div class="table-section">'
+    +'<div class="table-header-bar" style="background:#14532D;display:flex;align-items:center;justify-content:space-between">'
+    +'<span class="table-header-bar-title">Egresos Pagados en '+period+'</span>'
+    +'<span class="table-header-bar-sub">'+egPag.length+' registros</span></div>'
+    +'<table class="egresos-table"><thead><tr>'
+    +'<th style="text-align:left;width:10%">Rubro</th>'
+    +'<th style="text-align:left;width:15%">Sub-Rubro</th>'
+    +'<th style="text-align:left;width:27%">Titular</th>'
+    +'<th style="width:7%">Año</th>'
+    +'<th style="width:11%">Mes Dev.</th>'
+    +'<th style="text-align:right;width:12%">Monto</th>'
+    +'<th style="text-align:right;width:12%">Pagado</th>'
+    +'</tr></thead><tbody>'
+    +(rowsPag.length?rowsPag:'<tr><td colspan="7" style="text-align:center;padding:16px;color:#64748B;font-style:italic">Sin egresos pagados en '+period+'</td></tr>')
+    +'</tbody><tfoot><tr>'
+    +'<td colspan="5" style="text-align:right;font-size:10px;color:#94A3B8">TOTAL PAGADO</td>'
+    +'<td></td>'
+    +'<td style="text-align:right;color:#86EFAC;font-weight:700">'+totPag.toLocaleString("es-PE",{minimumFractionDigits:2})+'</td>'
+    +'</tr></tfoot></table></div>';
+})()}
+<footer class="footer">
+  <div class="footer-left">
+    Informe: <strong>${period}</strong> · Edificio Costa Azul<br>
+    <span style="font-size:10px">Impreso el: ${new Date().toLocaleDateString('es-PE',{day:'2-digit',month:'long',year:'numeric'})}</span>
+  </div>
+  <div class="footer-confidential">Confidencial</div>
+</footer></div></body></html>`;
+
+  window._rptHTML=HTML; window._rptBase=base;
+  document.getElementById('r-frame').src=URL.createObjectURL(new Blob([HTML],{type:'text/html'}));
+}
+
+function setRscale(s,btn){
+  document.querySelectorAll('#s5 .tabbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const fr=document.getElementById('r-frame');
+  fr.style.transform=`scale(${s})`;fr.style.transformOrigin='top left';
+  fr.style.width=(100/s)+'%';fr.style.height=(680/s)+'px';
+  document.getElementById('r-wrap').style.height='680px';
+}
+
+function imprimirInforme(){
+  const h=window._rptHTML||'';
+  if(!h){set('r-status','⚠ Genera el informe primero');return;}
+  // Agregar botón cerrar y auto-print al documento
+  const hConBoton=h.replace('</body>',
+    '<div style="position:fixed;top:10px;right:10px;z-index:9999;display:flex;gap:8px">'
+    +'<button onclick="window.print()" style="padding:8px 16px;background:#1A6B8A;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🖨 Imprimir / PDF</button>'
+    +'<button onclick="window.close()" style="padding:8px 16px;background:#DC2626;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">✕ Cerrar</button>'
+    +'</div></body>');
+  const win=window.open('','_blank');
+  win.document.write(hConBoton);
+  win.document.close();
+}
+
+function descargarHTML(){
+  const b=window._rptBase||'InformeECA', h=window._rptHTML||'';
+  if(!h){set('r-status','⚠ Selecciona mes y sección primero');return;}
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([h],{type:'text/html'}));
+  a.download=b+'.html';document.body.appendChild(a);a.click();document.body.removeChild(a);
+  set('r-status',`✓ Descargado ${b}.html`);setTimeout(()=>set('r-status',''),5000);
+}
+
+function descargarPDF(){
+  const b=window._rptBase||'InformeECA', h=window._rptHTML||'';
+  if(!h){set('r-status','⚠ Selecciona mes y sección primero');return;}
+  const scriptTag='<scr'+'ipt>window.onload=function(){window.print();}</scr'+'ipt>';
+  const hP=h.replace('</body>', scriptTag+'</body>');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([hP],{type:'text/html'}));
+  a.download=b+'_PDF.html';document.body.appendChild(a);a.click();document.body.removeChild(a);
+  set('r-status',`✓ Descargado — ábrelo en Chrome → se imprime solo → guarda como PDF → nómbralo ${b}.pdf`);
+  setTimeout(()=>set('r-status',''),10000);
+}
+
+/* ══════════════════════════════════════════════════
+   GOOGLE DRIVE — Lee el Excel automáticamente
+   API Key integrada — no requiere configuración
+══════════════════════════════════════════════════ */
+const GAPI_KEY   = 'AIzaSyAVWf4z9ReuShsiBfnvIDsLT4MZPIA7Rz4';
+const EXCEL_ID   = '1fgF3t4f6cWnJ3ISCJ_sgbImhyZ3QvgB7';
+const FOLDER_ID  = '1zwzEbizHFNmyS9_5S93N_KCOPzuxzJwl';
+
+// Indicador de sincronización en sidebar
+function setSyncUI(estado, texto){
+  const d=document.getElementById('sb-sync-dot');
+  const t=document.getElementById('sb-sync-txt');
+  if(d) d.className='sb-sync-dot '+estado;
+  if(t) t.textContent=texto;
+}
+
+async function leerExcelDrive(){
+  setSyncUI('loading','Leyendo Excel de Drive…');
+  try{
+    const resp=await fetch(`https://www.googleapis.com/drive/v3/files/${EXCEL_ID}?alt=media&key=${GAPI_KEY}`);
+    if(!resp.ok) throw new Error(`Error ${resp.status}`);
+    const buf=await resp.arrayBuffer();
+    await parsearExcel(buf);
+    const hora=new Date().toLocaleTimeString('es-PE');
+    setSyncUI('ok',`Actualizado ${hora}`);
+    applyFilters();
+    buildInforme();
+  }catch(e){
+    console.warn('Drive no disponible, usando datos del HTML:',e.message);
+    setSyncUI('offline','Modo offline');
+    // Datos del HTML ya están cargados — no hace falta nada más
+    applyFilters();
+    buildInforme();
+  }
+}
+
+// Convierte serial de fecha Excel a string legible
+function serialToDateStr(s){
+  if(!s||s===0) return null;
+  try{
+    const d=XLSX.SSF.parse_date_code(s);
+    const meses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Set','Oct','Nov','Dic'];
+    return `${d.d} ${meses[d.m-1]} ${d.y}`;
+  }catch{return null;}
+}
+
+async function parsearExcel(buf){
+  // Cargar XLSX.js si no está disponible
+  if(typeof XLSX==='undefined'){
+    await new Promise((res,rej)=>{
+      const s=document.createElement('script');
+      s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      s.onload=res; s.onerror=rej;
+      document.head.appendChild(s);
+    });
+  }
+  const wb=XLSX.read(new Uint8Array(buf),{type:'array',cellStyles:true});
+
+  // ── Hoja RESUMEN MENSUAL ──────────────────────────────
+  const ws=wb.Sheets['RESUMEN MENSUAL ']||wb.Sheets['RESUMEN MENSUAL'];
+  if(ws){
+    // ── CxC Detalle completo (Fila 37=headers meses, Filas 38-55=dptos) ──
+    // col0=Dpto, col1..12=Ene..Dic(seriales), col13=Total
+    DATOS.cxc = []; // [{dpto, meses:{YYYY-MM: deuda}, total}]
+    const fila37 = 37;
+    // Leer headers de meses (seriales) en fila 37
+    const cxcMeses = {}; // col → YYYY-MM
+    for(let c=1;c<=12;c++){
+      const serial=ws[XLSX.utils.encode_cell({r:fila37-1,c})]?.v;
+      if(!serial||typeof serial!=='number') continue;
+      try{const d=XLSX.SSF.parse_date_code(serial);cxcMeses[c]=`${d.y}-${String(d.m).padStart(2,'0')}`;}catch{}
+    }
+    // Leer filas 38-55 (dptos)
+    for(let r=38;r<=55;r++){
+      const dv=ws[XLSX.utils.encode_cell({r:r-1,c:0})]?.v;
+      const dnum=parseInt(dv||0);
+      if(!dnum||dnum>9999) continue;
+      const meses={};
+      for(const [c,mk] of Object.entries(cxcMeses)){
+        const val=parseFloat(ws[XLSX.utils.encode_cell({r:r-1,c:parseInt(c)})]?.v)||0;
+        if(val>0) meses[mk]=val;
+      }
+      const total=parseFloat(ws[XLSX.utils.encode_cell({r:r-1,c:13})]?.v)||0;
+      if(total>0||Object.keys(meses).length>0)
+        DATOS.cxc.push({dpto:dnum, meses, total});
+    }
+
+    // ── Saldos iniciales por mes (Fila 18=headers seriales, Fila 19=valores) ──
+    // Col1=Mayo, Col2=Junio, Col3=Julio... se agrega una columna cada mes
+    const _v=(r,c)=>parseFloat(ws[XLSX.utils.encode_cell({r,c})]?.v)||0;
+    // Leer tabla de saldos iniciales: fila 18 tiene seriales de mes, fila 19 los montos
+    DATOS.saldos_por_mes = {}; // {YYYY-MM: saldo_inicial}
+    for(let c=1;c<=20;c++){
+      const serial=ws[XLSX.utils.encode_cell({r:17,c})]?.v; // fila 18
+      const monto =ws[XLSX.utils.encode_cell({r:18,c})]?.v; // fila 19
+      if(!serial||!monto) continue;
+      try{
+        const d=XLSX.SSF.parse_date_code(serial);
+        const mk=`${d.y}-${String(d.m).padStart(2,'0')}`;
+        DATOS.saldos_por_mes[mk]=parseFloat(monto)||0;
+      }catch{}
+    }
+    // Saldo caja (F14) y saldo mes (F16) del mes actual del Excel
+    const vSaldoCaja = _v(13,1); // F14
+    const vSaldoMes  = _v(15,1); // F16
+    const vIngMes    = _v(5,1);  // F6
+    const vEgrMes    = _v(9,1);  // F10
+    if(vSaldoCaja) DATOS.saldo_caja = vSaldoCaja;
+    if(vSaldoMes)  DATOS.saldo_mes  = vSaldoMes;
+    if(vIngMes)    DATOS.ing_mes    = vIngMes;
+    if(vEgrMes)    DATOS.egr_mes    = vEgrMes;
+
+    const nuevosEgr=[];
+    const enc=(r,c)=>XLSX.utils.encode_cell({r:r-1,c});
+    const toMK=v=>{
+      if(!v&&v!==0) return '';
+      // Serial numérico de Excel (más común)
+      if(typeof v==='number'&&v>40000){
+        try{const d=XLSX.SSF.parse_date_code(v);return `${d.y}-${String(d.m).padStart(2,'0')}`;}catch{}
+      }
+      if(typeof v==='string'){
+        // Ya viene en formato YYYY-MM o YYYY-MM-DD
+        if(/^\d{4}-\d{1,2}/.test(v)){
+          const p=v.split('-');return `${p[0]}-${p[1].padStart(2,'0')}`;
+        }
+        // Formato "may-26" o "may-2026"
+        const ms2=['ene','feb','mar','abr','may','jun','jul','ago','set','sep','oct','nov','dic'];
+        const low=v.toLowerCase();
+        const mi=ms2.findIndex(m=>low.startsWith(m));
+        if(mi>=0){
+          const yr=low.match(/\d{2,4}$/);
+          const y=yr?parseInt(yr[0])+(parseInt(yr[0])<100?2000:0):2026;
+          return `${y}-${String(mi+1).padStart(2,'0')}`;
+        }
+      }
+      return '';
+    };
+
+    // Matriz Egresos: col13=MesActual, col15=SubRubro, col16=Titular
+    // col19=MesDevengue, col20=Monto, col21=Pago
+    // Leer hasta fila 200 para cubrir todos los registros
+    const toISO=v=>{ // Fecha Pago → 'YYYY-MM-DD'
+      if(v===undefined||v===null||v==='')return null;
+      try{
+        if(v instanceof Date)return v.getFullYear()+'-'+String(v.getMonth()+1).padStart(2,'0')+'-'+String(v.getDate()).padStart(2,'0');
+        if(typeof v==='number'){const d=XLSX.SSF.parse_date_code(v);return d.y+'-'+String(d.m).padStart(2,'0')+'-'+String(d.d).padStart(2,'0');}
+      }catch{}
+      return null;};
+    for(let r=57;r<=400;r++){
+      const sub=String(ws[enc(r,15)]?.v||'').trim();
+      const tit=String(ws[enc(r,16)]?.v||'').trim();
+      if(!sub&&!tit) continue;
+      const md=toMK(ws[enc(r,19)]?.v);
+      const ma=toMK(ws[enc(r,13)]?.v);
+      if(!ma) continue; // saltar filas sin mes actual
+      const monto=parseFloat(ws[enc(r,20)]?.v)||0;
+      const pr=ws[enc(r,21)]?.v;
+      const pago=(pr!==undefined&&pr!==null&&pr!==''&&pr!==0)?parseFloat(pr):null;
+      if(!monto) continue; // saltar filas sin monto
+      nuevosEgr.push({ma,md,sub,tit,monto,pago,fpd:toISO(ws[enc(r,17)]?.v)});
+    }
+    if(nuevosEgr.length>0) DATOS.egresos=nuevosEgr;
+
+    // ── Matriz INGRESOS — lectura completa ──────────────────
+    // Fila 57=headers, datos desde fila 58
+    // col0=MesActual(serial) = mes en que se realizó el pago
+    // col3=Dpto, col4=FechaPago(serial), col5=MesDevengue(serial)
+    // col9=Pago, col10=Deuda
+    // LÓGICA: leer TODOS los registros sin filtrar por mes
+    // El render filtrará según lo que necesite cada sección
+    const sToDate=s=>{
+      if(!s||s===0) return null;
+      try{const d=XLSX.SSF.parse_date_code(s);const M=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Set','Oct','Nov','Dic'];return `${d.d} ${M[d.m-1]} ${d.y}`;}
+      catch{return null;}
+    };
+    const sToMK=s=>{
+      if(!s||s===0) return '';
+      try{const d=XLSX.SSF.parse_date_code(s);return `${d.y}-${String(d.m).padStart(2,'0')}`;}
+      catch{return '';}
+    };
+
+    // Guardar TODOS los registros de ingresos (todos los meses)
+    DATOS.ingresos=[];
+    for(let r=58;r<=300;r++){
+      const maRaw=ws[XLSX.utils.encode_cell({r:r-1,c:0})]?.v;
+      if(!maRaw) continue;
+      const ma=typeof maRaw==='number'?sToMK(maRaw):toMK(maRaw);
+      if(!ma) continue;
+      const dnum=parseInt(ws[XLSX.utils.encode_cell({r:r-1,c:3})]?.v||0);
+      if(!dnum||dnum>9999) continue;
+      const fpRaw=ws[XLSX.utils.encode_cell({r:r-1,c:4})]?.v;
+      const mdRaw=ws[XLSX.utils.encode_cell({r:r-1,c:5})]?.v;
+      const tarifa=parseFloat(ws[XLSX.utils.encode_cell({r:r-1,c:1})]?.v)||600;
+      const pago=parseFloat(ws[XLSX.utils.encode_cell({r:r-1,c:9})]?.v)||0;
+      const deuda=parseFloat(ws[XLSX.utils.encode_cell({r:r-1,c:10})]?.v)||0;
+      const fp=sToDate(fpRaw);
+      const md=typeof mdRaw==='number'?sToMK(mdRaw):toMK(mdRaw);
+      DATOS.ingresos.push({ma, dpto:dnum, tarifa, fp, md, pago, deuda});
+    }
+
+    // Construir DATOS.dptos dinámicamente:
+    // Para cada dpto, mostrar todas sus deudas pendientes + pagos del mes seleccionado
+    // Se reconstruye en applyFilters() con la lógica correcta
+    // Por ahora poner estructura base
+    const DLIST=[201,301,401,501,601,701,801,901,1001,1101,1201,1301,1401,1501,1601,1701,1801];
+    DATOS.dptos=DLIST.map(d=>({d, t:d===1801?1200:600, pagado:false, fp:null}));
+  }
+
+  // ── Hoja Plan Mant Anual ──────────────────────────────
+  const wm=wb.Sheets['Mantenimiento Anual']||wb.Sheets['Plan Mant Anual']||wb.Sheets['Plan Mantenimiento Anual']||wb.Sheets['Mant Anual'];
+  if(wm){
+    const enc=(r,c)=>XLSX.utils.encode_cell({r:r-1,c});
+    // Estructura confirmada del Excel:
+    // Fila 49 = headers. Items desde fila 50.
+    // col1=Area, col2=Cod, col3=Item, col6=Prioridad
+    // Meses: col14=Ene, col15=Feb, col16=Mar, col17=Abr, col18=May,
+    //        col19=Jun, col20=Jul, col21=Ago, col22=Set, col23=Oct, col24=Nov, col25=Dic
+    const COL_MESES={1:14,2:15,3:16,4:17,5:18,6:19,7:20,8:21,9:22,10:23,11:24,12:25};
+    const nuevoMant=[];
+    for(let r=50;r<=80;r++){
+      const area=String(wm[XLSX.utils.encode_cell({r:r-1,c:1})]?.v||'').trim();
+      const cod=String(wm[XLSX.utils.encode_cell({r:r-1,c:2})]?.v||'').trim().toUpperCase();
+      const item=String(wm[XLSX.utils.encode_cell({r:r-1,c:3})]?.v||'').trim();
+      const pri=parseInt(wm[XLSX.utils.encode_cell({r:r-1,c:6})]?.v)||3;
+      if(!item||!cod||cod==='COD') continue;
+      const prog={};const am={};
+      for(let m=1;m<=12;m++){
+        const col=COL_MESES[m];
+        const addr=XLSX.utils.encode_cell({r:r-1,c:col});
+        prog[m]=parseFloat(wm[addr]?.v)||0;
+        // Detectar color amarillo
+        const cell=wm[addr];
+        let isY=false;
+        if(cell?.s?.fgColor?.rgb){
+          const rgb=cell.s.fgColor.rgb.toLowerCase();
+          isY=rgb&&rgb!=='00000000'&&rgb!=='ffffffff'&&
+            (rgb.includes('ffd9')||rgb.includes('ffd0')||rgb.includes('ffff0')||
+             rgb==='ffffff00'||rgb==='ffffd966'||rgb==='ffffc000'||
+             (rgb.startsWith('ffff')&&rgb!=='ffffffff'));
+        }
+        am[m]=isY;
+      }
+      nuevoMant.push({cod,area,item,pri,prog,am});
+    }
+    if(nuevoMant.length>0){
+      const month=parseInt(document.getElementById('g-month')?.value||5);
+      DATOS.mant=nuevoMant.filter(it=>(it.prog[month]||0)>0).map(it=>({
+        cod:it.cod, area:it.area, item:it.item, pri:it.pri,
+        prog:it.prog[month]||0,
+        amarillo:!!it.am[month]
+      }));
+    }
+  }
+
+  // ── Hoja Evaluacion 600 ───────────────────────────────
+  const we=wb.Sheets['Evaluacion 600'];
+  if(we){
+    const enc=(r,c)=>XLSX.utils.encode_cell({r:r-1,c});
+    const TARGET=['Planilla Ordinaria','Planilla Domingo','Luz','Agua','Telefonia','Celular','Insumos','Mantenimiento','Contador'];
+    const nuevoPresup=[];
+    for(let r=5;r<=25;r++){
+      const item=String(we[enc(r,2)]?.v||'').trim();
+      const monto=parseFloat(we[enc(r,3)]?.v)||0;
+      if(!item||!monto) continue;
+      const match=TARGET.find(x=>item.toLowerCase().includes(x.toLowerCase()));
+      if(!match) continue;
+      // Mapear al grupo y sub correcto
+      let g='Operaciones',sub=item,kw=undefined;
+      if(item.toLowerCase().includes('planilla')||item.toLowerCase().includes('sueldo')) g='Personal';
+      else if(item.toLowerCase().includes('luz')){g='Servicios';sub='Basicos';kw='luz';}
+      else if(item.toLowerCase().includes('agua')||item.toLowerCase().includes('sedapal')){g='Servicios';sub='Basicos';kw='sedapal';}
+      else if(item.toLowerCase().includes('telefonia')||item.toLowerCase().includes('celular')){g='Servicios';sub='Basicos';kw='telefonia';}
+      else if(item.toLowerCase().includes('insumo')){g='Operaciones';sub='Insumos';}
+      else if(item.toLowerCase().includes('mantenimiento')){g='Operaciones';sub='Mantenimiento';}
+      nuevoPresup.push({lb:item,p:monto,g,sub,kw});
+    }
+    if(nuevoPresup.length>0) DATOS.presup=nuevoPresup;
+  }
+}
+
+/* ── INICIO ─────────────────────────────────────── */
+
+/* ══════════════════════════════════════════════════
+   SECCIÓN 6 — AGENDA Y ACTAS
+══════════════════════════════════════════════════ */
+const S6_DIRECTIVA={
+  presidente:    {nombre:'JUAN EGUREN MENDOZA',                dni:'45518955',cargo:'Presidente',  dpto:'1801'},
+  vicepresidenta:{nombre:'LUCY DEVOTO NUÑEZ DEL ARCO DE VEGA',dni:'09391166',cargo:'Vicepresidenta',dpto:'1401'},
+  secretaria:    {nombre:'MARIA GLADYS OU YANG CHUENG',        dni:'07273099',cargo:'Secretaria',  dpto:'801'},
+  tesorera:      {nombre:'MYRIAM GIULIANA ABUGATTAS GIADALAH', dni:'30835190',cargo:'Tesorera',    dpto:'501'},
+};
+const S6_PROPIETARIOS=[
+  {dpto:'201', nombre:'Zaida Maria Jimenez Campaña',                          pct:'5.246%'},
+  {dpto:'301', nombre:'Alfredo Alberto Monteverde Ugarriza',                   pct:'5.230%'},
+  {dpto:'301', nombre:'Milagros Teresa Muñoz Welis',                           pct:'5.230%'},
+  {dpto:'401', nombre:'Milton Edmundo Sagastegui Ponsignon',                   pct:'5.613%'},
+  {dpto:'501', nombre:'Myriam Abugattas Giadalah',                             pct:'5.218%'},
+  {dpto:'601', nombre:'Jorge Alberto Morante Figari',                          pct:'5.474%'},
+  {dpto:'701', nombre:'Robert Pablo Bruce Balarezo',                           pct:'5.282%'},
+  {dpto:'701', nombre:'Ana Isabel Piccini Raschio',                            pct:'5.282%'},
+  {dpto:'801', nombre:'Maria Gladys Ou Yang Chueng',                           pct:'5.830%'},
+  {dpto:'901', nombre:'FyL Consultorias y Proyectos SAC',                      pct:'4.600%'},
+  {dpto:'1001',nombre:'Magally Gongora Niño de Guzman',                        pct:'5.231%'},
+  {dpto:'1101',nombre:'Julia Aida Sisniegas Goicochea Vda de Gutierrez',       pct:'5.234%'},
+  {dpto:'1201',nombre:'Sergio Alejandro Marcenaro Valdivieso',                 pct:'5.284%'},
+  {dpto:'1201',nombre:'Olga Marta Balarezo Binda de Marcenaro',                pct:'5.284%'},
+  {dpto:'1301',nombre:'Luis Felipe Piccini Delgado',                           pct:'5.266%'},
+  {dpto:'1401',nombre:'Julio Cesar Vega Bermudez',                             pct:'5.265%'},
+  {dpto:'1401',nombre:'Luz Elena Devoto Nuñez',                                pct:'5.265%'},
+  {dpto:'1501',nombre:'Jorge Federico Gutierrez Sisniegas',                    pct:'5.248%'},
+  {dpto:'1601',nombre:'Carlos Guillermo Jesus Auza Velez',                     pct:'5.722%'},
+  {dpto:'1701',nombre:'Amaro Alfonso Novoa Flores',                            pct:'5.234%'},
+  {dpto:'1701',nombre:'Margarita Olazabal Gomez de la Torre',                  pct:'5.234%'},
+  {dpto:'1801',nombre:'Juan Eguren Mendoza',                                   pct:'14.510%'},
+  {dpto:'1801',nombre:'Maria Pia Eguren Mendoza',                              pct:'14.510%'},
+];
+
+let s6Tipo='ORDINARIA';
+let s6Puntos=[];
+let s6Quorum={};
+let s6Poderes={};
+let s6Acuerdos=[];
+let s6AgendaSel=null;
+let s6HtmlAgenda='', s6HtmlActa='';
+let s6Agendas=[];
+
+// Tabs
+function s6Tab(tab,btn){
+  ['agenda','acta','hist'].forEach(t=>{
+    document.getElementById('s6p-'+t).style.display=t===tab?'block':'none';
+    document.getElementById('s6tab-'+t).classList.toggle('active',t===tab);
+  });
+  if(tab==='acta') s6RenderAgendasActa();
+  if(tab==='hist') s6RenderHistorial();
+}
+
+// Tipo junta
+function s6SetTipo(tipo){
+  s6Tipo=tipo;
+  const esOrd=tipo==='ORDINARIA';
+  document.getElementById('s6-tipo-ord').style.cssText=`flex:1;padding:12px;border:2px solid ${esOrd?'var(--ocean)':'var(--border)'};border-radius:10px;cursor:pointer;background:${esOrd?'var(--mist)':'#fff'};color:${esOrd?'var(--ocean)':'#64748B'};font-size:13px;font-weight:${esOrd?'700':'500'};text-align:center`;
+  document.getElementById('s6-tipo-ext').style.cssText=`flex:1;padding:12px;border:2px solid ${!esOrd?'var(--ocean)':'var(--border)'};border-radius:10px;cursor:pointer;background:${!esOrd?'var(--mist)':'#fff'};color:${!esOrd?'var(--ocean)':'#64748B'};font-size:13px;font-weight:${!esOrd?'700':'500'};text-align:center`;
+  s6UpdateId();
+}
+function s6UpdateId(){
+  const num=document.getElementById('s6-num').value;
+  const anio=document.getElementById('s6-anio').value;
+  const abr=s6Tipo==='ORDINARIA'?'ORD':'EXT';
+  document.getElementById('s6-id-prev').textContent=`J.${abr}-${String(num).padStart(2,'0')}-${anio}`;
+}
+
+// Status
+function s6Status(id,msg,tipo){
+  const el=document.getElementById(id);
+  el.textContent=msg;
+  el.style.display='block';
+  el.style.background=tipo==='ok'?'#E1F5EE':tipo==='error'?'#FEF2F2':'#E6F1FB';
+  el.style.color=tipo==='ok'?'#0F6E56':tipo==='error'?'#DC2626':'#1A6B8A';
+  if(tipo==='ok') setTimeout(()=>el.style.display='none',5000);
+}
+
+// Puntos
+function s6AddPunto(){
+  const inp=document.getElementById('s6-nuevo-punto');
+  const txt=inp.value.trim(); if(!txt) return;
+  s6Puntos.push(txt); inp.value=''; s6RenderPuntos();
+}
+function s6RemovePunto(i){s6Puntos.splice(i,1);s6RenderPuntos();}
+function s6RenderPuntos(){
+  document.getElementById('s6-puntos-list').innerHTML=s6Puntos.map((p,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;background:var(--mist2);border:1px solid var(--border);border-radius:8px;padding:8px 12px">
+      <span style="font-family:monospace;font-size:11px;color:#94A3B8;min-width:20px">${i+1}.</span>
+      <span style="flex:1;font-size:12px">${p}</span>
+      <button onclick="s6RemovePunto(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:16px;padding:0 4px">×</button>
+    </div>`).join('');
+}
+function s6LimpiarAgenda(){s6Puntos=[];s6RenderPuntos();s6HtmlAgenda='';document.getElementById('s6-ag-preview').style.display='none';}
+function s6LimpiarActa(){s6Acuerdos=[];s6RenderAcuerdos();s6HtmlActa='';document.getElementById('s6-ac-preview').style.display='none';}
+
+// Storage
+async function s6CargarAgendas(){
+  try{
+    if(typeof window.storage==='undefined') throw new Error('no storage');
+    const r=await window.storage.get('s6_agendas_ca');
+    if(r) s6Agendas=JSON.parse(r.value)||[];
+  }catch{
+    // Fallback: usar localStorage
+    try{const d=localStorage.getItem('s6_agendas_ca');if(d)s6Agendas=JSON.parse(d)||[];}
+    catch{s6Agendas=[];}
+  }
+}
+async function s6GuardarAgenda(){
+  if(s6Puntos.length===0){s6Status('s6-ag-status','Agrega al menos un punto','error');return;}
+  const fecha=document.getElementById('s6-fecha').value;
+  if(!fecha){s6Status('s6-ag-status','Selecciona la fecha','error');return;}
+  const num=document.getElementById('s6-num').value;
+  const anio=document.getElementById('s6-anio').value;
+  const abr=s6Tipo==='ORDINARIA'?'ORD':'EXT';
+  const id=`J.${abr}-${String(num).padStart(2,'0')}-${anio}`;
+  const fechaStr=new Date(fecha+'T12:00:00').toLocaleDateString('es-PE',{day:'numeric',month:'long',year:'numeric'});
+  const agenda={id,tipo:s6Tipo,numero:num,anio,fecha,fechaStr,
+    hora:document.getElementById('s6-hora1').value,
+    hora2:document.getElementById('s6-hora2').value,
+    lugar:document.getElementById('s6-lugar').value,
+    puntos:[...s6Puntos],htmlAgenda:s6HtmlAgenda,
+    creadaEn:new Date().toISOString()};
+  const idx=s6Agendas.findIndex(a=>a.id===id);
+  if(idx>=0) s6Agendas[idx]=agenda; else s6Agendas.unshift(agenda);
+  try{
+    try{
+      if(typeof window.storage!=='undefined')
+        await window.storage.set('s6_agendas_ca',JSON.stringify(s6Agendas));
+      else
+        localStorage.setItem('s6_agendas_ca',JSON.stringify(s6Agendas));
+    }catch{}
+    s6Status('s6-ag-status',`✓ Agenda ${id} guardada`,'ok');
+    s6RenderAgendasActa(); s6RenderHistorial();
+  }catch(e){s6Status('s6-ag-status','Error: '+e.message,'error');}
+}
+
+// Agendas en panel Acta
+function s6RenderAgendasActa(){
+  const cont=document.getElementById('s6-agendas-acta');
+  if(s6Agendas.length===0){cont.innerHTML='<div style="text-align:center;padding:20px;color:#94A3B8;font-size:12px">No hay agendas guardadas. Crea una primero.</div>';return;}
+  cont.innerHTML=s6Agendas.map(a=>`
+    <div style="background:var(--mist2);border:1.5px solid ${s6AgendaSel?.id===a.id?'var(--ocean)':'var(--border)'};border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px">
+      <span style="background:var(--ink);color:var(--gold);font-family:monospace;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;white-space:nowrap">${a.id}</span>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:600">Junta ${a.tipo} — ${a.fechaStr||a.fecha}</div>
+        <div style="font-size:10px;color:#94A3B8;margin-top:2px">${a.puntos.length} puntos · ${a.hora} hrs</div>
+      </div>
+      <button onclick="s6SelAgenda('${a.id}')"
+        style="padding:5px 12px;border-radius:6px;border:1px solid var(--ocean);background:${s6AgendaSel?.id===a.id?'var(--ocean)':'#fff'};color:${s6AgendaSel?.id===a.id?'#fff':'var(--ocean)'};font-size:11px;font-weight:600;cursor:pointer">
+        ${s6AgendaSel?.id===a.id?'✓ Seleccionada':'Seleccionar'}
+      </button>
+    </div>`).join('');
+}
+
+function s6SelAgenda(id){
+  s6AgendaSel=s6Agendas.find(a=>a.id===id);
+  if(s6AgendaSel){
+    document.getElementById('s6-ac-fecha').value=s6AgendaSel.fecha;
+    document.getElementById('s6-ac-hora-ini').value=s6AgendaSel.hora;
+    s6Acuerdos=s6AgendaSel.puntos.map(p=>({punto:p,texto:'',voto:'UNANIMIDAD'}));
+    s6RenderAcuerdos();
+    document.getElementById('s6-acuerdos-empty').style.display='none';
+  }
+  s6RenderAgendasActa();
+}
+
+function s6RenderHistorial(){
+  const cont=document.getElementById('s6-historial');
+  if(s6Agendas.length===0){
+    cont.innerHTML='<div style="text-align:center;padding:20px;color:#94A3B8;font-size:12px">Sin registros aún.</div>';
+    return;
+  }
+  // Separar agendas y actas
+  const agendas=s6Agendas.filter(a=>a.tipo!=='ACTA');
+  const actas=s6Agendas.filter(a=>a.tipo==='ACTA');
+
+  let html='';
+  if(agendas.length>0){
+    html+='<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94A3B8;margin-bottom:8px">Agendas</div>';
+    html+=agendas.map(a=>`
+      <div style="background:var(--mist2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px">
+        <span style="background:var(--ink);color:var(--gold);font-family:monospace;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;white-space:nowrap">${a.id}</span>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:600">Junta ${a.tipo} N°${a.numero} — ${a.fechaStr||a.fecha}</div>
+          <div style="font-size:10px;color:#94A3B8;margin-top:2px">${(a.puntos||[]).slice(0,2).join(' · ')}${(a.puntos||[]).length>2?'...':''}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          ${a.htmlAgenda?`<button onclick="s6VerAgenda('${a.id}')" style="padding:5px 10px;background:#fff;border:1px solid var(--border);border-radius:6px;font-size:11px;cursor:pointer">👁 Ver</button>`:''}
+          ${a.htmlAgenda?`<button onclick="s6ImprimirHistorial('agenda','${a.id}')" style="padding:5px 10px;background:#16A34A;color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer">🖨 PDF</button>`:''}
+          <button onclick="s6EliminarAgenda('${a.id}')" style="padding:5px 10px;background:var(--red);color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer">🗑</button>
+        </div>
+      </div>`).join('');
+  }
+  if(actas.length>0){
+    html+='<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94A3B8;margin:14px 0 8px">Actas</div>';
+    html+=actas.map(a=>`
+      <div style="background:var(--mist2);border:1px solid #1A6B8A;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px">
+        <span style="background:#1A6B8A;color:#fff;font-family:monospace;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;white-space:nowrap">${a.id}</span>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:600">Acta — Junta ${a.tipoJunta} N°${a.numero} — ${a.fechaStr||a.fecha}</div>
+          <div style="font-size:10px;color:#94A3B8;margin-top:2px">${a.totalAsistentes||0} asistentes · ${(a.acuerdos||[]).length} acuerdos</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button onclick="s6ImprimirHistorial('acta','${a.id}')" style="padding:5px 10px;background:#16A34A;color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer">🖨 PDF</button>
+          <button onclick="s6EliminarAgenda('${a.id}')" style="padding:5px 10px;background:var(--red);color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer">🗑</button>
+        </div>
+      </div>`).join('');
+  }
+  cont.innerHTML=html;
+}
+
+function s6ImprimirHistorial(tipo, id){
+  const item=s6Agendas.find(a=>a.id===id);
+  if(!item) return;
+  const html=tipo==='agenda'?item.htmlAgenda:item.htmlActa;
+  if(!html){alert('No hay documento generado para este registro');return;}
+  const win=window.open('','_blank');
+  win.document.write(html);
+  win.document.close();
+  win.onload=function(){win.print();};
+}
+function s6VerAgenda(id){
+  const a=s6Agendas.find(x=>x.id===id);
+  if(!a?.htmlAgenda) return;
+  s6HtmlAgenda=a.htmlAgenda;
+  document.getElementById('s6-ag-preview').style.display='block';
+  document.getElementById('s6-ag-frame').src=URL.createObjectURL(new Blob([s6HtmlAgenda],{type:'text/html'}));
+  s6Tab('agenda',document.getElementById('s6tab-agenda'));
+}
+async function s6EliminarAgenda(id){
+  if(!confirm(`¿Eliminar ${id}?`)) return;
+  s6Agendas=s6Agendas.filter(a=>a.id!==id);
+  try{
+    if(typeof window.storage!=='undefined')
+      await window.storage.set('s6_agendas_ca',JSON.stringify(s6Agendas));
+    else
+      localStorage.setItem('s6_agendas_ca',JSON.stringify(s6Agendas));
+  }catch{}
+  s6RenderHistorial(); s6RenderAgendasActa();
+}
+
+// Quorum
+function s6InitDirectivaGrid(){
+  const dir=[
+    {cargo:'Presidente',    dpto:'1801', nombre:'Juan Eguren Mendoza'},
+    {cargo:'Vicepresidenta',dpto:'1401', nombre:'Luz Elena Devoto Nuñez'},
+    {cargo:'Secretaria',    dpto:'801',  nombre:'Maria Gladys Ou Yang Chueng'},
+    {cargo:'Tesorera',      dpto:'501',  nombre:'Myriam Abugattas Giadalah'},
+  ];
+  document.getElementById('s6-dir-grid').innerHTML=dir.map(d=>`
+    <div style="background:var(--mist2);border:1.5px solid var(--border);border-radius:8px;padding:10px 12px">
+      <div style="font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${d.cargo}</div>
+      <div style="font-size:12px;font-weight:600;color:#1E293B;margin-bottom:6px">Dpto ${d.dpto} — ${d.nombre}</div>
+      <div style="display:flex="display:flex;gap:4px">
+        <button onclick="s6ToggleDirectiva('${d.cargo}','presente')"
+          id="s6dir-btn-${d.cargo}-presente"
+          style="flex:1;padding:4px 5px;font-size:9px;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:#fff;color:#1E293B">✓ Presente</button>
+        <button onclick="s6ToggleDirectiva('${d.cargo}','poder')"
+          id="s6dir-btn-${d.cargo}-poder"
+          style="flex:1;padding:4px 5px;font-size:9px;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:#fff;color:#1E293B">Poder</button>
+        <button onclick="s6ToggleDirectiva('${d.cargo}','ausente')"
+          id="s6dir-btn-${d.cargo}-ausente"
+          style="flex:1;padding:4px 5px;font-size:9px;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:#fff;color:#1E293B">Ausente</button>
+      </div>`).join('');
+}
+function s6InitQuorum(){
+  const dptosUnicos=[...new Set(S6_PROPIETARIOS.map(p=>p.dpto))];
+  document.getElementById('s6-quorum-grid').innerHTML=dptosUnicos.map(d=>`
+    <div id="s6chip-${d}" onclick="s6TogglePresente('${d}')"
+      style="padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;text-align:center;background:#fff;transition:all .12s;color:#1E293B">
+      ${d}
+    </div>`).join('');
+}
+
+function s6InitDirectivaGrid(){
+  const dir=[
+    {cargo:'Presidente',    dpto:'1801', nombre:'Juan Eguren Mendoza'},
+    {cargo:'Vicepresidenta',dpto:'1401', nombre:'Luz Elena Devoto Nuñez'},
+    {cargo:'Secretaria',    dpto:'801',  nombre:'Maria Gladys Ou Yang Chueng'},
+    {cargo:'Tesorera',      dpto:'501',  nombre:'Myriam Abugattas Giadalah'},
+  ];
+  document.getElementById('s6-dir-grid').innerHTML=dir.map(d=>`
+    <div style="background:var(--mist2);border:1.5px solid var(--border);border-radius:8px;padding:10px 12px">
+      <div style="font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${d.cargo}</div>
+      <div style="font-size:12px;font-weight:600;color:#1E293B;margin-bottom:6px">Dpto ${d.dpto} — ${d.nombre}</div>
+      <div style="display:flex;gap:4px">
+        <button onclick="s6ToggleDirectiva('${d.cargo}','presente')" id="s6dir-btn-${d.cargo}-presente"
+          style="flex:1;padding:4px 5px;font-size:9px;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:#fff;color:#1E293B">✓ Presente</button>
+        <button onclick="s6ToggleDirectiva('${d.cargo}','poder')" id="s6dir-btn-${d.cargo}-poder"
+          style="flex:1;padding:4px 5px;font-size:9px;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:#fff;color:#1E293B">Poder</button>
+        <button onclick="s6ToggleDirectiva('${d.cargo}','ausente')" id="s6dir-btn-${d.cargo}-ausente"
+          style="flex:1;padding:4px 5px;font-size:9px;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:#fff;color:#1E293B">Ausente</button>
+      </div>
+      <input type="text" id="s6dir-poder-${d.cargo}" placeholder="Nombre representante..."
+        style="display:none;width:100%;margin-top:6px;font-size:11px;padding:4px 8px;border:1px solid var(--border);border-radius:6px">
+    </div>`).join('');
+}
+
+function s6TogglePresente(dpto){
+  s6Quorum[dpto]=s6Quorum[dpto]==='presente'?undefined:'presente';
+  if(!s6Quorum[dpto]) delete s6Quorum[dpto];
+  const chip=document.getElementById('s6chip-'+dpto);
+  const ok=s6Quorum[dpto]==='presente';
+  const pod=s6Quorum[dpto]==='poder';
+  chip.style.borderColor=ok?'#16A34A':pod?'#D97706':'var(--border)';
+  chip.style.background=ok?'#E1F5EE':pod?'#FAEEDA':'#fff';
+  chip.style.color=ok?'#0F6E56':pod?'#92400E':'inherit';
+  s6UpdateQuorum();
+}
+function s6ContarQuorum(){
+  // Reglas:
+  // - Dpto 1 propietario: presente o poder → cuenta 1
+  // - Dpto 2 propietarios: AMBOS deben estar presentes o con poder, si uno ausente → no cuenta
+  // - Dpto 1801: mismo criterio pero vale 2 votos
+  const DOBLE_VOTO=['1801'];
+  const dptos2prop=[...new Set(
+    S6_PROPIETARIOS.filter(p=>S6_PROPIETARIOS.filter(x=>x.dpto===p.dpto).length>1).map(p=>p.dpto)
+  )];
+  let votos=0;
+  const dptosContados=new Set();
+
+  Object.keys(s6Quorum).forEach(dpto=>{
+    if(dptosContados.has(dpto)) return;
+    dptosContados.add(dpto);
+    const esDosProps=dptos2prop.includes(dpto);
+    const esDobleVoto=DOBLE_VOTO.includes(dpto);
+    const valor=esDobleVoto?2:1;
+
+    if(esDosProps){
+      // Necesita AMBOS propietarios con presencia válida (presente o poder)
+      // Si alguno está ausente o sin marcar → no cuenta
+      const props=S6_PROPIETARIOS.filter(p=>p.dpto===dpto);
+      const todosValidos=props.every(p=>{
+        // El quórum del dpto aplica a todos sus propietarios
+        return s6Quorum[dpto]==='presente'||s6Quorum[dpto]==='poder';
+      });
+      // Verificar si hay algún propietario individual marcado ausente
+      // En la implementación actual, el quórum es por dpto
+      // Si el chip está marcado como presente/poder → ambos cuentan
+      // Si hay poder registrado, verificar que cubre a todos
+      const poderesDelDpto=s6Poderes[dpto]||[];
+      const nPropietarios=props.length;
+      const nPoderes=Array.isArray(poderesDelDpto)?poderesDelDpto.length:0;
+      const estadoDpto=s6Quorum[dpto];
+      
+      if(estadoDpto==='presente'){
+        // Ambos presentes → válido
+        votos+=valor;
+      } else if(estadoDpto==='poder'){
+        // Verificar: ¿hay poderes para todos los propietarios?
+        if(nPoderes>=nPropietarios){
+          votos+=valor; // todos tienen poder
+        } else if(nPoderes>0){
+          // Solo algunos tienen poder → no cuenta (uno queda ausente)
+          // No suma
+        }
+      }
+    } else {
+      // Dpto con 1 propietario: presente o poder → cuenta
+      if(s6Quorum[dpto]==='presente'||s6Quorum[dpto]==='poder'){
+        votos+=valor;
+      }
+    }
+  });
+  return votos;
+}
+
+function s6UpdateQuorum(){
+  const votos=s6ContarQuorum();
+  const ok=votos>=10;
+  const pres=Object.values(s6Quorum).filter(v=>v==='presente').length;
+  const pod=Object.values(s6Quorum).filter(v=>v==='poder').length;
+  const el=document.getElementById('s6-quorum-txt');
+  el.style.color=ok?'#0F6E56':'var(--red)';
+  el.textContent=`${ok?'✓':'✗'} Quórum: ${votos} votos · ${pres} dptos presentes · ${pod} dptos con poder`;
+}
+function registrarPoder(){
+  const val=document.getElementById('poder-otorga').value; // formato "dpto_idx"
+  const dpto=val.split('_')[0];
+  const idx=parseInt(val.split('_')[1]);
+  const propNombre=S6_PROPIETARIOS[idx]?.nombre||'';
+  const rep=document.getElementById('poder-receptor').value.trim();
+  if(!rep){alert('Ingresa el nombre del representante');return;}
+  // Guardar poder con nombre del propietario que otorga
+  if(!s6Poderes[dpto]) s6Poderes[dpto]=[];
+  s6Poderes[dpto].push({propietario:propNombre, representante:rep});
+  s6Quorum[dpto]='poder';
+  const chip=document.getElementById('s6chip-'+dpto);
+  if(chip){chip.style.borderColor='#D97706'; chip.style.background='#FAEEDA'; chip.style.color='#92400E';}
+  s6UpdateQuorum();
+  document.getElementById('poder-modal').style.display='none';
+  document.getElementById('poder-receptor').value='';
+}
+let s6DirectivaPresencia={};
+
+function s6ToggleDirectiva(cargo,estado){
+  if(!s6DirectivaPresencia[cargo]) s6DirectivaPresencia[cargo]={};
+  s6DirectivaPresencia[cargo].estado=estado;
+  const colores={presente:'#16A34A',poder:'#D97706',ausente:'#DC2626'};
+  ['presente','poder','ausente'].forEach(e=>{
+    const btn=document.getElementById('s6dir-btn-'+cargo+'-'+e);
+    if(btn){
+      btn.style.background=e===estado?colores[e]:'#fff';
+      btn.style.color=e===estado?'#fff':'#1E293B';
+      btn.style.borderColor=e===estado?colores[e]:'var(--border)';
+    }
+  });
+  const inp=document.getElementById('s6dir-poder-'+cargo);
+  if(inp) inp.style.display=estado==='poder'?'block':'none';
+}
+
+function s6InitPoderModal(){
+  // Mostrar cada propietario individualmente (incluso si comparten dpto)
+  document.getElementById('poder-otorga').innerHTML=S6_PROPIETARIOS.map((p,i)=>
+    `<option value="${p.dpto}_${i}">${p.dpto} — ${p.nombre}</option>`
+  ).join('');
+}
+
+// Acuerdos
+function s6RenderAcuerdos(){
+  const list=document.getElementById('s6-acuerdos-list');
+  if(s6Acuerdos.length===0){list.innerHTML='';document.getElementById('s6-acuerdos-empty').style.display='block';return;}
+  document.getElementById('s6-acuerdos-empty').style.display='none';
+  const votos=['UNANIMIDAD','MAYORÍA','MINORÍA'];
+  const vcolors={'UNANIMIDAD':'#16A34A','MAYORÍA':'var(--ocean)','MINORÍA':'var(--red)'};
+  list.innerHTML=s6Acuerdos.map((a,i)=>`
+    <div style="background:var(--mist2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="background:var(--ocean);color:#fff;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;font-family:monospace">${i+1}</span>
+        <span style="font-size:12px;color:#64748B;font-style:italic;flex:1">${a.punto}</span>
+      </div>
+      <textarea placeholder="Describe el acuerdo tomado brevemente..." rows="2"
+        style="width:100%;font-size:13px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;resize:vertical;margin-bottom:8px;font-family:inherit"
+        onchange="s6Acuerdos[${i}].texto=this.value">${a.texto}</textarea>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:11px;color:#64748B">Votación:</span>
+        ${votos.map(v=>`<button onclick="s6SetVoto(${i},'${v}')"
+          style="padding:4px 10px;border-radius:6px;border:1px solid ${a.voto===v?vcolors[v]:'var(--border)'};background:${a.voto===v?vcolors[v]:'#fff'};color:${a.voto===v?'#fff':'inherit'};font-size:11px;font-weight:500;cursor:pointer">${v}</button>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function s6SetVoto(i,v){s6Acuerdos[i].voto=v;s6RenderAcuerdos();}
+
+// Wrap HTML doc
+function s6LimpiarHTML(html){
+  // Reemplazar TODAS las variables CSS con valores reales
+  return html
+    .replace(/var\(--ink\)/g,'#0D1B2A')
+    .replace(/var\(--slate\)/g,'#1E3A5F')
+    .replace(/var\(--ocean\)/g,'#1A6B8A')
+    .replace(/var\(--gold\)/g,'#C9A84C')
+    .replace(/var\(--gold-light\)/g,'#F0D080')
+    .replace(/var\(--amber\)/g,'#D97706')
+    .replace(/var\(--red\)/g,'#DC2626')
+    .replace(/var\(--green\)/g,'#16A34A')
+    .replace(/var\(--teal\)/g,'#0D9488')
+    .replace(/var\(--mist\)/g,'#EEF4FB')
+    .replace(/var\(--mist2\)/g,'#F5F8FC')
+    .replace(/var\(--silver\)/g,'#94A3B8')
+    .replace(/var\(--border\)/g,'#DDE6F0')
+    .replace(/var\(--text\)/g,'#1E293B')
+    .replace(/var\(--text-soft\)/g,'#64748B')
+    .replace(/var\(--r\)/g,'10px')
+    .replace(/var\(--r-lg\)/g,'16px')
+    .replace(/var\(--font-display\)/g,"Georgia,serif")
+    .replace(/var\(--font-body\)/g,"'Segoe UI',Arial,sans-serif")
+    .replace(/var\(--font-mono\)/g,"'Courier New',monospace")
+    // Quitar cualquier otra variable CSS no resuelta
+    .replace(/var\(--[^)]+\)/g,'inherit');
+}
+
+function s6LimpiarHTML(h){
+  const m={'--ink':'#0D1B2A','--slate':'#1E3A5F','--ocean':'#1A6B8A','--gold':'#C9A84C',
+    '--gold-light':'#F0D080','--amber':'#D97706','--red':'#DC2626','--green':'#16A34A',
+    '--teal':'#0D9488','--mist':'#EEF4FB','--mist2':'#F5F8FC','--silver':'#94A3B8',
+    '--border':'#DDE6F0','--text':'#1E293B','--text-soft':'#64748B','--r':'10px','--r-lg':'16px'};
+  Object.entries(m).forEach(([k,v])=>{h=h.split('var('+k+')').join(v);});
+  h=h.replace(/var\(--[^)]+\)/g,'inherit');
+  return h;
+}
+function s6WrapDoc(html){
+  const h=s6LimpiarHTML(html);
+  return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>'
+    +'*{box-sizing:border-box;margin:0;padding:0}'
+    +'body{font-family:\'Segoe UI\',Arial,sans-serif;background:#fff;color:#1E293B;line-height:1.6;padding:24px}'
+    +'@media print{body{padding:0}@page{margin:2cm}}'
+    +'</style></head><body>'+h+'</body></html>';
+}
+
+// Generar Agenda con IA
+async function s6GenerarAgenda(){
+  if(s6Puntos.length===0){s6Status('s6-ag-status','Agrega al menos un punto','error');return;}
+  const fecha=document.getElementById('s6-fecha').value;
+  if(!fecha){s6Status('s6-ag-status','Selecciona la fecha','error');return;}
+  const num=document.getElementById('s6-num').value;
+  const anio=document.getElementById('s6-anio').value;
+  const abr=s6Tipo==='ORDINARIA'?'ORD':'EXT';
+  const idJunta=`J.${abr}-${String(num).padStart(2,'0')}-${anio}`;
+  const fechaStr=new Date(fecha+'T12:00:00').toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  s6Status('s6-ag-status','✨ Generando convocatoria con IA...','loading');
+  // La IA genera SOLO el texto estructurado en JSON
+  // El código aplica el diseño visual — así no hay problemas de CSS
+  const prompt=`Eres la Secretaria de la Junta de Propietarios del Edificio Costa Azul, Lima.
+Redacta la convocatoria formal para:
+ID: ${idJunta} | TIPO: Junta ${s6Tipo} | FECHA: ${fechaStr}
+HORA 1RA: ${document.getElementById('s6-hora1').value} | HORA 2DA: ${document.getElementById('s6-hora2').value}
+LUGAR: ${document.getElementById('s6-lugar').value}
+PUNTOS: ${s6Puntos.map((p,i)=>`${i+1}. ${p}`).join(' | ')}
+PRESIDENTE: ${S6_DIRECTIVA.presidente.nombre}
+
+Responde SOLO con un objeto JSON con esta estructura exacta (sin explicaciones ni markdown):
+{
+  "introduccion": "párrafo de introducción formal",
+  "puntos": ["punto 1 expandido formalmente","punto 2 expandido formalmente"],
+  "cierre": "párrafo de cierre formal con nota de quórum",
+  "nota_quorum": "texto sobre el quórum requerido"
+}`;
+  try{
+    // Intentar directo primero, si falla usar proxy CORS
+    let resp;
+    try{
+      resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+    }catch(e){
+      resp=await fetch('https://corsproxy.io/?https://api.anthropic.com/v1/messages',{method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+    }
+    const data=await resp.json();
+    let txt=(data.content?.[0]?.text||'').replace(/```json|```/g,'').trim();
+    let parsed;
+    try{parsed=JSON.parse(txt);}catch{parsed={introduccion:txt,puntos:s6Puntos,cierre:'',nota_quorum:'Se requiere la presencia de 10 de 17 departamentos para quórum válido.'};}
+    const puntosHTML=parsed.puntos.map((p,i)=>`<tr><td style="padding:10px 14px;border-bottom:1px solid #DDE6F0;vertical-align:top;width:30px;font-weight:700;color:#1A6B8A">${i+1}.</td><td style="padding:10px 14px;border-bottom:1px solid #DDE6F0;color:#1E293B;font-size:13px">${p}</td></tr>`).join('');
+    const docHTML='<div style="max-width:800px;margin:0 auto;font-family:Arial,sans-serif;padding:20px">'
+      +'<div style="background:#0D1B2A;padding:24px 32px;margin-bottom:24px;border-radius:8px;border-top:3px solid #C9A84C">'
+      +'<div style="font-size:10px;letter-spacing:2px;color:#C9A84C;text-transform:uppercase;margin-bottom:6px">CONVOCATORIA — '+idJunta+'</div>'
+      +'<div style="font-size:24px;color:#ffffff;font-weight:bold;margin-bottom:4px">EDIFICIO COSTA AZUL</div>'
+      +'<div style="font-size:12px;color:#94A3B8">Junta '+s6Tipo+' de Propietarios N° '+document.getElementById('s6-num').value+' — '+document.getElementById('s6-anio').value+'</div>'
+      +'</div>'
+      +'<p style="color:#1E293B;font-size:13px;margin-bottom:16px">Estimados Propietarios,</p>'
+      +'<p style="color:#1E293B;font-size:13px;margin-bottom:20px">'+parsed.introduccion+'</p>'
+      +'<div style="background:#EEF4FB;border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#1E293B">'
+      +'<b>Primera convocatoria:</b> '+document.getElementById('s6-hora1').value+' hrs &nbsp;|&nbsp; '
+      +'<b>Segunda convocatoria:</b> '+document.getElementById('s6-hora2').value+' hrs<br>'
+      +'<b>Lugar:</b> '+document.getElementById('s6-lugar').value
+      +'</div>'
+      +'<p style="font-weight:700;color:#1E293B;margin-bottom:8px;font-size:13px">AGENDA:</p>'
+      +'<table style="width:100%;border-collapse:collapse;border:1px solid #DDE6F0;border-radius:8px;overflow:hidden;margin-bottom:20px">'+puntosHTML+'</table>'
+      +'<p style="color:#1E293B;font-size:13px;margin-bottom:20px">'+parsed.cierre+'</p>'
+      +'<p style="color:#64748B;font-size:11px;font-style:italic;margin-bottom:30px">'+parsed.nota_quorum+'</p>'
+      +'<div style="margin-top:40px;text-align:center">'
+      +'<div style="display:inline-block;text-align:center">'
+      +'<div style="border-top:1px solid #0D1B2A;padding-top:8px;min-width:200px">'
+      +'<div style="font-weight:700;color:#1E293B;font-size:12px">'+S6_DIRECTIVA.presidente.nombre+'</div>'
+      +'<div style="color:#64748B;font-size:11px">Presidente de la Junta de Propietarios</div>'
+      +'</div></div></div></div>';
+    s6HtmlAgenda=s6WrapDoc(docHTML);
+    document.getElementById('s6-ag-prev-title').textContent='Vista previa — '+idJunta;
+    document.getElementById('s6-ag-preview').style.display='block';
+    document.getElementById('s6-ag-frame').src=URL.createObjectURL(new Blob([s6HtmlAgenda],{type:'text/html'}));
+    s6Status('s6-ag-status','✓ Generado. Revisa y guarda.','ok');
+  }catch(e){s6Status('s6-ag-status','Error: '+e.message,'error');}
+}
+
+// Generar Acta con IA
+async function s6GenerarActa(){
+  if(!s6AgendaSel){s6Status('s6-ac-status','Selecciona una agenda primero','error');return;}
+  const fecha=document.getElementById('s6-ac-fecha').value;
+  if(!fecha){s6Status('s6-ac-status','Selecciona la fecha','error');return;}
+  const total=Object.keys(s6Quorum).length;
+  if(total<10){s6Status('s6-ac-status',`Quórum insuficiente: ${total}/17`,'error');return;}
+  if(s6Acuerdos.length===0){s6Status('s6-ac-status','Importa los puntos primero','error');return;}
+  s6Status('s6-ac-status','✨ Redactando acta con IA...','loading');
+  const fechaStr=new Date(fecha+'T12:00:00').toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const presentes=S6_PROPIETARIOS.filter(p=>s6Quorum[p.dpto]);
+  const presentesList=presentes.map(p=>`• Dpto ${p.dpto}: ${p.nombre}${s6Quorum[p.dpto]==='poder'?` (rep. por ${s6Poderes[p.dpto]})`:''} (${p.pct})`).join('\n');
+  const acuerdosList=s6Acuerdos.map((a,i)=>`PUNTO ${i+1}: "${a.punto}" | ACUERDO: ${a.texto||'Se deliberó y tomaron medidas.'} | VOTACIÓN: ${a.voto}`).join('\n');
+  // La IA genera SOLO texto en JSON — el código aplica el diseño
+  const prompt=`Eres la Secretaria de la Junta de Propietarios del Edificio Costa Azul, Lima.
+Redacta el acta oficial para:
+ID: ${s6AgendaSel.id} | TIPO: Junta ${s6AgendaSel.tipo} | FECHA: ${fechaStr}
+HORA: ${document.getElementById('s6-ac-hora-ini').value} a ${document.getElementById('s6-ac-hora-fin').value} hrs
+ASISTENTES (${total}/17): ${presentesList}
+ACUERDOS: ${acuerdosList}
+
+Responde SOLO con un objeto JSON (sin markdown ni explicaciones):
+{
+  "apertura": "párrafo de apertura formal",
+  "quorum": "declaración de quórum válido",
+  "acuerdos": ["texto formal expandido del acuerdo 1","texto formal del acuerdo 2"],
+  "cierre": "párrafo de cierre formal"
+}`;
+  try{
+    let resp;
+    try{
+      resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
+    }catch(e){
+      resp=await fetch('https://corsproxy.io/?https://api.anthropic.com/v1/messages',{method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
+    }
+    const data=await resp.json();
+    let txt=(data.content?.[0]?.text||'').replace(/```json|```/g,'').trim();
+    let p;
+    try{p=JSON.parse(txt);}catch{p={apertura:txt,quorum:'Quórum válido con '+total+' de 17 propietarios.',acuerdos:s6Acuerdos.map(a=>a.texto||a.punto),cierre:'Sin más asuntos, se levantó la sesión.'};}
+    const nums=['PRIMERO','SEGUNDO','TERCERO','CUARTO','QUINTO','SEXTO','SÉPTIMO','OCTAVO','NOVENO','DÉCIMO'];
+    // Construir lista de asistentes con manejo correcto de poderes y dptos con 2 propietarios
+    const presHTML=S6_PROPIETARIOS.filter(pr=>s6Quorum[pr.dpto]).map(pr=>{
+      const estado=s6Quorum[pr.dpto];
+      // Buscar si hay un poder específico para este propietario
+      const poderesDelDpto=s6Poderes[pr.dpto]||[];
+      const poderEspecifico=Array.isArray(poderesDelDpto)
+        ?poderesDelDpto.find(p=>p.propietario===pr.nombre)
+        :null;
+      let estadoTexto, estadoColor;
+      if(estado==='presente'){
+        estadoTexto='Presente'; estadoColor='#16A34A';
+      } else if(estado==='poder'&&poderEspecifico){
+        estadoTexto='Poder'; estadoColor='#D97706';
+      } else if(estado==='poder'&&!poderEspecifico){
+        estadoTexto='Ausente'; estadoColor='#DC2626';
+      } else {
+        estadoTexto='Presente'; estadoColor='#16A34A';
+      }
+      const repHTML=poderEspecifico?`<div style="font-size:10px;color:#D97706">Rep. por: ${poderEspecifico.representante}</div>`:'';
+      return `<tr>
+        <td style="padding:5px 12px;border-bottom:1px solid #EEF4FB;color:#1E293B;font-size:12px">${pr.dpto}</td>
+        <td style="padding:5px 12px;border-bottom:1px solid #EEF4FB;color:#1E293B;font-size:12px">${pr.nombre}${repHTML}</td>
+        <td style="padding:5px 12px;border-bottom:1px solid #EEF4FB;font-size:12px;color:${estadoColor};font-weight:600">${estadoTexto}</td>
+      </tr>`;
+    }).join('');
+    const acuHTML=(p.acuerdos||[]).map((a,i)=>{
+      const num=nums[i]||`${i+1}°`;
+      const puntoOriginal=s6Acuerdos[i]?.punto||'';
+      const votacion=s6Acuerdos[i]?.voto||'UNANIMIDAD';
+      return `<div style="margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #EEF4FB">
+        <div style="font-weight:700;color:#0D1B2A;font-size:13px;margin-bottom:4px">${num}.-</div>
+        <div style="font-size:11px;color:#64748B;font-style:italic;margin-bottom:6px;padding:4px 10px;background:#F8FAFC;border-left:3px solid #C9A84C">${puntoOriginal}</div>
+        <p style="color:#1E293B;font-size:13px;margin-bottom:6px">${a}</p>
+        <div style="font-size:10px;color:#1A6B8A;font-weight:600">Votación: ${votacion}</div>
+      </div>`;
+    }).join('');
+    const votosQuorum=s6ContarQuorum();
+    const horaIni=document.getElementById('s6-ac-hora-ini').value;
+    const horaFin=document.getElementById('s6-ac-hora-fin').value;
+    const docHTML='<div style="max-width:800px;margin:0 auto;font-family:Arial,sans-serif;padding:20px">'
+      // ── PÁGINA 1: Encabezado + Apertura + Acuerdos + Firmas Directiva ──
+      +'<div style="background:#0D1B2A;padding:24px 32px;margin-bottom:24px;border-radius:8px;border-top:3px solid #C9A84C">'
+      +'<div style="font-size:10px;letter-spacing:2px;color:#C9A84C;text-transform:uppercase;margin-bottom:6px">ACTA — '+s6AgendaSel.id+'</div>'
+      +'<div style="font-size:26px;color:#ffffff;font-weight:bold;margin-bottom:4px">EDIFICIO COSTA AZUL</div>'
+      +'<div style="font-size:13px;color:#ffffff;font-weight:600;margin-bottom:2px">Junta '+s6AgendaSel.tipo+' N° '+s6AgendaSel.numero+' — '+s6AgendaSel.anio+'</div>'
+      +'<div style="font-size:11px;color:#94A3B8">'+fechaStr+' · '+horaIni+' a '+horaFin+' hrs</div>'
+      +'</div>'
+      +'<p style="color:#1E293B;font-size:13px;margin-bottom:16px">'+p.apertura+'</p>'
+      +'<p style="color:#1E293B;font-size:13px;margin-bottom:8px">Reunidos en <strong>Av. Paseo de la República N° 6240, Miraflores, Lima</strong>, el día <strong>'+fechaStr+'</strong> a las <strong>'+horaIni+' horas</strong>, con quórum válido de <strong>'+votosQuorum+' votos</strong>, la Junta de Propietarios acordó lo siguiente:</p>'
+      +'<p style="font-weight:700;color:#1E293B;margin-bottom:12px;font-size:13px;margin-top:20px">ACUERDOS ADOPTADOS:</p>'
+      +acuHTML
+      +'<p style="color:#1E293B;font-size:13px;margin-top:16px;margin-bottom:16px">'+p.cierre+'</p>'
+      +'<p style="color:#64748B;font-size:11px;margin-bottom:40px">Partida Registral N° 49028660 del Registro de Propiedad Inmueble de Lima.</p>'
+      // Firmas de directiva según presencia marcada
+      +(() => {
+        const dirCargos=[
+          {cargo:'Presidente',    dpto:'1801', d:S6_DIRECTIVA.presidente},
+          {cargo:'Vicepresidenta',dpto:'1401', d:S6_DIRECTIVA.vicepresidenta},
+          {cargo:'Secretaria',    dpto:'801',  d:S6_DIRECTIVA.secretaria},
+          {cargo:'Tesorera',      dpto:'501',  d:S6_DIRECTIVA.tesorera},
+        ];
+        const firmasHTML=dirCargos.map(dc=>{
+          const pr=s6DirectivaPresencia[dc.cargo];
+          const estado=pr?.estado||'no marcado';
+          const inp=document.getElementById('s6dir-poder-'+dc.cargo);
+          const rep=inp?inp.value.trim():'';
+          const colEstado=estado==='presente'?'#16A34A':estado==='poder'?'#D97706':estado==='ausente'?'#DC2626':'#94A3B8';
+          const txtEstado=estado==='presente'?'Presente':estado==='poder'?'Por poder':estado==='ausente'?'Ausente':'—';
+          return '<div style="text-align:center">'
+            +'<div style="border-top:2px solid '+colEstado+';padding-top:8px;min-width:160px">'
+            +'<div style="font-weight:700;color:#1E293B;font-size:12px">'+dc.d.nombre+'</div>'
+            +'<div style="color:#64748B;font-size:11px">Dpto '+dc.dpto+' · '+dc.cargo+'</div>'
+            +'<div style="font-size:10px;font-weight:700;color:'+colEstado+';margin-top:3px">'+txtEstado+'</div>'
+            +(estado==='poder'&&rep?'<div style="font-size:10px;color:#D97706">Rep.: '+rep+'</div>':'')
+            +'</div></div>';
+        }).join('');
+        return '<p style="font-weight:700;color:#1E293B;font-size:12px;margin-top:30px;margin-bottom:16px">DIRECTIVA:</p>'
+          +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:30px 40px;margin-top:10px">'+firmasHTML+'</div>';
+      })()
+      +'</div>'
+      // ── PÁGINA 2: Lista completa de asistentes ──
+      +'<div style="page-break-before:always;padding-top:30px">'
+      +'<div style="background:#0D1B2A;padding:14px 24px;margin-bottom:20px;border-radius:8px;border-top:3px solid #C9A84C">'
+      +'<div style="font-size:10px;color:#C9A84C;letter-spacing:2px;text-transform:uppercase">ANEXO — REGISTRO DE ASISTENCIA</div>'
+      +'<div style="font-size:14px;color:#fff;font-weight:bold">Acta '+s6AgendaSel.id+' · '+fechaStr+'</div>'
+      +'</div>'
+      +'<p style="font-weight:700;color:#1E293B;margin-bottom:10px;font-size:12px">PROPIETARIOS ASISTENTES ('+total+' de 17):</p>'
+      +'<table style="width:100%;border-collapse:collapse;margin-bottom:20px"><thead><tr>'
+      +'<th style="padding:6px 12px;text-align:left;background:#EEF4FB;color:#64748B;font-size:11px;border:1px solid #DDE6F0">Dpto</th>'
+      +'<th style="padding:6px 12px;text-align:left;background:#EEF4FB;color:#64748B;font-size:11px;border:1px solid #DDE6F0">Propietario</th>'
+      +'<th style="padding:6px 12px;text-align:left;background:#EEF4FB;color:#64748B;font-size:11px;border:1px solid #DDE6F0">Asistencia</th>'
+      +'</tr></thead><tbody>'+presHTML+'</tbody></table>'
+      +'</div>';
+    s6HtmlActa=s6WrapDoc(docHTML);
+    document.getElementById('s6-ac-prev-title').textContent='Acta — '+s6AgendaSel.id;
+    document.getElementById('s6-ac-preview').style.display='block';
+    document.getElementById('s6-ac-frame').src=URL.createObjectURL(new Blob([s6HtmlActa],{type:'text/html'}));
+    s6Status('s6-ac-status','✓ Acta generada','ok');
+  }catch(e){s6Status('s6-ac-status','Error: '+e.message,'error');}
+}
+
+async function s6GuardarActa(){
+  if(!s6HtmlActa){s6Status('s6-ac-status','Primero genera el acta','error');return;}
+  if(!s6AgendaSel){s6Status('s6-ac-status','No hay agenda seleccionada','error');return;}
+  const id='ACTA-'+s6AgendaSel.id;
+  const fecha=document.getElementById('s6-ac-fecha').value;
+  const fechaStr=fecha?new Date(fecha+'T12:00:00').toLocaleDateString('es-PE',{day:'numeric',month:'long',year:'numeric'}):s6AgendaSel.fechaStr;
+  const acta={
+    id, tipo:'ACTA', agendaId:s6AgendaSel.id,
+    tipoJunta:s6AgendaSel.tipo, numero:s6AgendaSel.numero, anio:s6AgendaSel.anio,
+    fecha, fechaStr,
+    totalAsistentes:Object.keys(s6Quorum).length,
+    acuerdos:s6Acuerdos.map(a=>({punto:a.punto,voto:a.voto})),
+    htmlActa:s6HtmlActa,
+    creadaEn:new Date().toISOString()
+  };
+  // Guardar junto con las agendas
+  const idx=s6Agendas.findIndex(a=>a.id===id);
+  if(idx>=0) s6Agendas[idx]=acta; else s6Agendas.unshift(acta);
+  try{
+    if(typeof window.storage!=='undefined')
+      await window.storage.set('s6_agendas_ca',JSON.stringify(s6Agendas));
+    else
+      localStorage.setItem('s6_agendas_ca',JSON.stringify(s6Agendas));
+    s6Status('s6-ac-status','✓ Acta '+id+' guardada en historial','ok');
+    s6RenderHistorial();
+  }catch(e){s6Status('s6-ac-status','Error al guardar: '+e.message,'error');}
+}
+
+function s6DescargarDoc(tipo){
+  const html=tipo==='agenda'?s6HtmlAgenda:s6HtmlActa;
+  if(!html) return;
+  const id=tipo==='agenda'?document.getElementById('s6-id-prev').textContent:(s6AgendaSel?.id||'Acta');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));
+  a.download=`${tipo==='agenda'?'Agenda':'Acta'}_${id}_CostaAzul.html`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+function s6ImprimirDoc(tipo){
+  const frame=document.getElementById(tipo==='agenda'?'s6-ag-frame':'s6-ac-frame');
+  // Abrir en ventana nueva para imprimir/guardar PDF
+  const html=tipo==='agenda'?s6HtmlAgenda:s6HtmlActa;
+  if(!html){alert('Primero genera el documento');return;}
+  const win=window.open('','_blank');
+  win.document.write(html);
+  win.document.close();
+  win.onload=function(){win.print();};
+}
+
+// Init S6
+async function initS6(){
+  document.getElementById('s6-fecha').value=new Date().toISOString().split('T')[0];
+  document.getElementById('s6-ac-fecha').value=new Date().toISOString().split('T')[0];
+  s6InitQuorum();
+  s6InitPoderModal();
+  s6InitDirectivaGrid();
+  await s6CargarAgendas();
+  s6RenderAgendasActa();
+  s6RenderHistorial();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  // 1. Mostrar dashboard con datos del HTML de inmediato
+  applyFilters();
+  buildInforme();
+  // 2. Leer Excel de Drive en paralelo y actualizar
+  leerExcelDrive();
+  initS6();
+});
+</script>
+</body>
+</html>
