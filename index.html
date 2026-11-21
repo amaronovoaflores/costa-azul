@@ -2473,15 +2473,19 @@ function s6RedactarActa(ctx){
   const hIni=document.getElementById('s6-ac-hora-ini').value, hFin=document.getElementById('s6-ac-hora-fin').value;
   const fechaLarga=new Date(document.getElementById('s6-ac-fecha').value+'T12:00:00').toLocaleDateString('es-PE',{day:'numeric',month:'long',year:'numeric'});
   const diaMes=new Date(document.getElementById('s6-ac-fecha').value+'T12:00:00').toLocaleDateString('es-PE',{day:'numeric',month:'long'});
-  const est=c=>(s6DirectivaPresencia[c]||{}).estado;
+  const est=c=>(s6DirectivaPresencia[c.charAt(0).toUpperCase()+c.slice(1)]||{}).estado;
   const quien=(...cs)=>{for(const c of cs){if(est(c)==='presente'||est(c)===undefined)return S6_DIRECTIVA[c];}return S6_DIRECTIVA[cs[0]];};
-  const preside=quien('presidente','vicepresidenta');
+  const presAusente=est('presidente')==='ausente'||est('presidente')==='poder';
+  const vicePresente=est('vicepresidenta')==='presente';
+  const preside=(presAusente&&vicePresente)?S6_DIRECTIVA.vicepresidenta:S6_DIRECTIVA.presidente;
+  const porVice=preside===S6_DIRECTIVA.vicepresidenta;
   const secre=quien('secretaria','tesorera');
   const cargoPre=preside.cargo, cargoSec=secre.cargo;
   const art=c=>c==='Secretaria'||c==='Tesorera'||c==='Vicepresidenta'?'la Sra.':'el Sr.';
   const P='</p><p style="color:#1E293B;font-size:13px;margin-bottom:16px;text-align:justify">';
-  const apertura='En la ciudad de Lima, siendo las '+hIni+' horas del día '+fechaLarga+', se reunieron los propietarios del <strong>EDIFICIO COSTA AZUL</strong>, inmueble ubicado en Av. Paseo de la República N° 6240, distrito de Miraflores, provincia y departamento de Lima, en Asamblea '+tipo+' de la Junta de Propietarios, previamente convocada por el Presidente de la Junta de Propietarios.'
+  const apertura='En la ciudad de Lima, siendo las '+hIni+' horas del día '+fechaLarga+', se reunieron los propietarios del <strong>EDIFICIO COSTA AZUL</strong>, inmueble ubicado en Av. Paseo de la República N° 6240, distrito de Miraflores, provincia y departamento de Lima, en Asamblea '+tipo+' de la Junta de Propietarios, previamente convocada por la Directiva de la Junta de Propietarios.'
     +P+'Preside la reunión '+art(cargoPre)+' <strong>'+preside.nombre+'</strong>, '+(art(cargoPre)==='la Sra.'?'identificada':'identificado')+' con DNI N° '+preside.dni+', en su calidad de '+cargoPre+' de la Junta de Propietarios EDIFICIO COSTA AZUL, actuando como '+cargoSec+' '+art(cargoSec)+' <strong>'+secre.nombre+'</strong>, identificada con DNI N° '+secre.dni+'.'
+    +(porVice?P+'Se deja constancia de que el Presidente de la Junta, Sr. <strong>'+S6_DIRECTIVA.presidente.nombre+'</strong>, no pudo asistir a la presente sesión, por lo que, estando presente la Vicepresidenta, la Asamblea es presidida por ella, conforme al Estatuto y al Reglamento Interno.':'')
     +P+'Luego de verificarse la asistencia de los propietarios y el quórum correspondiente, '+(cargoPre==='Presidente'?'el Presidente':'la '+cargoPre)+' declara válidamente instalada la Asamblea y se procede a tratar los puntos de agenda.';
   const quorum='Luego de verificarse la asistencia de los propietarios y el quórum requerido para la sesión en primera convocatoria, el '+diaMes+' a horas '+hIni+', de acuerdo con lo establecido en el Reglamento Interno vigente, se dejó constancia de que la convocatoria a la presente Junta de Propietarios se efectuó mediante esquelas dirigidas a todos los miembros de la Junta de Propietarios del Edificio, contándose con la asistencia de '+ctx.total+' de 17 departamentos, equivalentes a '+ctx.votosQuorum+' votos.'
     +P+'Habiéndose verificado las esquelas correspondientes y determinado el quórum suficiente, de conformidad con lo previsto en el Reglamento Interno, '+(cargoPre==='Presidente'?'el Presidente':'la '+cargoPre)+' declara válidamente instalada la Asamblea y se procede a instalar la presente Sesión de Junta '+tipo+' de Propietarios, con la siguiente agenda:';
@@ -2625,7 +2629,7 @@ Responde SOLO con un objeto JSON (sin markdown ni explicaciones):
       +'</tr></thead><tbody>'+presHTML+'</tbody></table>'
       +'<p style="font-weight:700;color:#1E293B;font-size:12px;margin:26px 0 8px">CERTIFICACIÓN</p>'
       +'<p style="color:#1E293B;font-size:12px;text-align:justify;margin-bottom:46px">'+p.certificacion+'</p>'
-      +'<div style="text-align:center"><div style="border-top:1px solid #1E293B;display:inline-block;padding-top:6px;min-width:220px"><div style="font-weight:700;font-size:12px">'+S6_DIRECTIVA.presidente.nombre+'</div><div style="font-size:11px;color:#64748B">DNI N° '+S6_DIRECTIVA.presidente.dni+'</div></div></div>'
+      +'<div style="text-align:center"><div style="border-top:1px solid #1E293B;display:inline-block;padding-top:6px;min-width:220px"><div style="font-weight:700;font-size:12px">'+p.preside.nombre+'</div><div style="font-size:11px;color:#64748B">'+p.preside.cargo+' · DNI N° '+p.preside.dni+'</div></div></div>'
       +'</div>';
     s6HtmlActa=s6WrapDoc(docHTML);
     document.getElementById('s6-ac-prev-title').textContent='Acta — '+s6AgendaSel.id;
