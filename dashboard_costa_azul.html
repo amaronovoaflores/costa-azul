@@ -630,7 +630,7 @@ iframe.rpt{width:100%;height:680px;border:none;display:block}
         </div>
         <div id="s6-ag-status" style="display:none;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:10px"></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button onclick="s6GenerarAgenda()" style="padding:8px 16px;background:#C9A84C;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">✨ Generar con IA</button>
+          <button onclick="s6GenerarAgenda()" style="padding:8px 16px;background:#C9A84C;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">Generar convocatoria</button>
           <button onclick="s6GuardarAgenda()" style="padding:8px 16px;background:var(--ocean);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">💾 Guardar Agenda</button>
           <button onclick="s6LimpiarAgenda()" style="padding:8px 16px;background:#fff;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer">🗑 Limpiar</button>
         </div>
@@ -686,7 +686,7 @@ iframe.rpt{width:100%;height:680px;border:none;display:block}
         <div id="s6-acuerdos-list"></div>
         <div id="s6-ac-status" style="display:none;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:10px"></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
-          <button onclick="s6GenerarActa()" style="padding:8px 16px;background:#C9A84C;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">✨ Generar Acta con IA</button>
+          <button onclick="s6GenerarActa()" style="padding:8px 16px;background:#C9A84C;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">Generar acta</button>
           <button onclick="s6LimpiarActa()" style="padding:8px 16px;background:#fff;border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer">🗑 Limpiar</button>
         </div>
         <div id="s6-ac-preview" style="display:none;margin-top:14px;border-radius:var(--r);overflow:hidden;border:1px solid var(--border)">
@@ -2412,7 +2412,7 @@ function s6WrapDoc(html){
     +'</style></head><body>'+h+'</body></html>';
 }
 
-// Generar Agenda con IA
+// Generar convocatoria (redacción local, sin IA ni red)
 async function s6GenerarAgenda(){
   if(s6Puntos.length===0){s6Status('s6-ag-status','Agrega al menos un punto','error');return;}
   const fecha=document.getElementById('s6-fecha').value;
@@ -2422,40 +2422,17 @@ async function s6GenerarAgenda(){
   const abr=s6Tipo==='ORDINARIA'?'ORD':'EXT';
   const idJunta=`J.${abr}-${String(num).padStart(2,'0')}-${anio}`;
   const fechaStr=new Date(fecha+'T12:00:00').toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  s6Status('s6-ag-status','✨ Generando convocatoria con IA...','loading');
-  // La IA genera SOLO el texto estructurado en JSON
-  // El código aplica el diseño visual — así no hay problemas de CSS
-  const prompt=`Eres la Secretaria de la Junta de Propietarios del Edificio Costa Azul, Lima.
-Redacta la convocatoria formal para:
-ID: ${idJunta} | TIPO: Junta ${s6Tipo} | FECHA: ${fechaStr}
-HORA 1RA: ${document.getElementById('s6-hora1').value} | HORA 2DA: ${document.getElementById('s6-hora2').value}
-LUGAR: ${document.getElementById('s6-lugar').value}
-PUNTOS: ${s6Puntos.map((p,i)=>`${i+1}. ${p}`).join(' | ')}
-PRESIDENTE: ${S6_DIRECTIVA.presidente.nombre}
-
-Responde SOLO con un objeto JSON con esta estructura exacta (sin explicaciones ni markdown):
-{
-  "introduccion": "párrafo de introducción formal",
-  "puntos": ["punto 1 expandido formalmente","punto 2 expandido formalmente"],
-  "cierre": "párrafo de cierre formal con nota de quórum",
-  "nota_quorum": "texto sobre el quórum requerido"
-}`;
+  s6Status('s6-ag-status','Generando convocatoria...','loading');
   try{
-    // Intentar directo primero, si falla usar proxy CORS
-    let resp;
-    try{
-      resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
-    }catch(e){
-      resp=await fetch('https://corsproxy.io/?https://api.anthropic.com/v1/messages',{method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
-    }
-    const data=await resp.json();
-    let txt=(data.content?.[0]?.text||'').replace(/```json|```/g,'').trim();
-    let parsed;
-    try{parsed=JSON.parse(txt);}catch{parsed={introduccion:txt,puntos:s6Puntos,cierre:'',nota_quorum:'Se requiere la presencia de 10 de 17 departamentos para quórum válido.'};}
+    const h1=document.getElementById('s6-hora1').value, h2=document.getElementById('s6-hora2').value;
+    const lugar=document.getElementById('s6-lugar').value;
+    const tipoTxt=s6Tipo==='ORDINARIA'?'Ordinaria':'Extraordinaria';
+    const parsed={
+      introduccion:'Por disposición de la Directiva y de conformidad con el Reglamento Interno y el Estatuto de la Junta de Propietarios del Edificio Costa Azul, se convoca a los señores propietarios a la Junta '+tipoTxt+' de Propietarios, a realizarse el día '+fechaStr+', en el siguiente lugar y horario, para tratar la agenda que se detalla a continuación.',
+      puntos:s6Puntos,
+      cierre:'Se solicita puntualidad. Los propietarios que no puedan asistir podrán hacerse representar mediante carta poder simple dirigida a la Junta, indicando el nombre del representante.',
+      nota_quorum:'Primera convocatoria: '+h1+' hrs. Segunda convocatoria: '+h2+' hrs. Para la validez de la sesión se requiere la presencia de propietarios que representen al menos 10 de los 17 departamentos (1801 con doble voto); en segunda convocatoria se sesionará con los asistentes, conforme al Reglamento.'
+    };
     const puntosHTML=parsed.puntos.map((p,i)=>`<tr><td style="padding:10px 14px;border-bottom:1px solid #DDE6F0;vertical-align:top;width:30px;font-weight:700;color:#1A6B8A">${i+1}.</td><td style="padding:10px 14px;border-bottom:1px solid #DDE6F0;color:#1E293B;font-size:13px">${p}</td></tr>`).join('');
     const docHTML='<div style="max-width:800px;margin:0 auto;font-family:Arial,sans-serif;padding:20px">'
       +'<div style="background:#0D1B2A;padding:24px 32px;margin-bottom:24px;border-radius:8px;border-top:3px solid #C9A84C">'
@@ -2488,7 +2465,7 @@ Responde SOLO con un objeto JSON con esta estructura exacta (sin explicaciones n
   }catch(e){s6Status('s6-ag-status','Error: '+e.message,'error');}
 }
 
-// Generar Acta con IA
+// Generar acta
 // Redacción del acta con el tenor del acta modelo (Junta Extraordinaria del 24 de marzo de 2026, carpeta Myriam ECA).
 // Sin IA ni red: plantillas locales. Las variaciones largas se redactan en el chat de Claude con este mismo tenor.
 function s6RedactarActa(ctx){
@@ -2525,7 +2502,8 @@ async function s6GenerarActa(){
   const fecha=document.getElementById('s6-ac-fecha').value;
   if(!fecha){s6Status('s6-ac-status','Selecciona la fecha','error');return;}
   const total=Object.keys(s6Quorum).length;
-  if(total<10){s6Status('s6-ac-status',`Quórum insuficiente: ${total}/17`,'error');return;}
+  const votosQ=s6ContarQuorum();
+  if(votosQ<10){s6Status('s6-ac-status',`Quórum insuficiente: ${votosQ} votos (se requieren 10)`,'error');return;}
   if(s6Acuerdos.length===0){s6Status('s6-ac-status','Importa los puntos primero','error');return;}
   s6Status('s6-ac-status','Redactando acta...','loading');
   const fechaStr=new Date(fecha+'T12:00:00').toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
@@ -2705,6 +2683,46 @@ function s6ImprimirDoc(tipo){
   win.onload=function(){win.print();};
 }
 
+// ===== Borrador automático de S6 (no se pierde lo cargado al recargar) =====
+const S6_BORR_KEY='s6_borrador_ca';
+let s6BorrUlt='';
+function s6BorrCapturar(){
+  const campos={};
+  document.querySelectorAll('#s6 input[id],#s6 select[id],#s6 textarea[id]').forEach(e=>{campos[e.id]=e.value;});
+  return {t:Date.now(),tipo:s6Tipo,puntos:s6Puntos,quorum:s6Quorum,poderes:s6Poderes,acuerdos:s6Acuerdos,
+    dir:s6DirectivaPresencia,agendaSel:s6AgendaSel,campos};
+}
+function s6BorrGuardar(){
+  try{
+    const o=s6BorrCapturar(); const j=JSON.stringify({...o,t:0});
+    if(j===s6BorrUlt) return; s6BorrUlt=j;
+    localStorage.setItem(S6_BORR_KEY,JSON.stringify(o));
+  }catch(e){}
+}
+function s6BorrRestaurar(){
+  let o; try{o=JSON.parse(localStorage.getItem(S6_BORR_KEY)||'null');}catch(e){}
+  if(!o) return false;
+  s6Puntos=o.puntos||[]; s6Quorum=o.quorum||{}; s6Poderes=o.poderes||{};
+  s6Acuerdos=o.acuerdos||[]; s6DirectivaPresencia=o.dir||{}; s6AgendaSel=o.agendaSel||null;
+  Object.entries(o.campos||{}).forEach(([id,v])=>{const e=document.getElementById(id); if(e&&e.type!=='file') e.value=v;});
+  try{s6SetTipo(o.tipo||'ORDINARIA');}catch(e){}
+  try{s6RenderPuntos();}catch(e){}
+  Object.keys(s6Quorum).forEach(d=>{
+    const chip=document.getElementById('s6chip-'+d); if(!chip) return;
+    const ok=s6Quorum[d]==='presente', pod=s6Quorum[d]==='poder';
+    chip.style.borderColor=ok?'#16A34A':pod?'#D97706':'var(--border)';
+    chip.style.background=ok?'#E1F5EE':pod?'#FAEEDA':'#fff';
+    chip.style.color=ok?'#0F6E56':pod?'#92400E':'inherit';
+  });
+  Object.entries(s6DirectivaPresencia).forEach(([c,v])=>{if(v&&v.estado) s6ToggleDirectiva(c,v.estado);});
+  if(s6Acuerdos.length){try{s6RenderAcuerdos();const em=document.getElementById('s6-acuerdos-empty'); if(em) em.style.display='none';}catch(e){}}
+  try{s6RenderAgendasActa();}catch(e){}
+  s6UpdateQuorum();
+  return true;
+}
+setInterval(s6BorrGuardar,2500);
+window.addEventListener('beforeunload',s6BorrGuardar);
+
 // Init S6
 async function initS6(){
   document.getElementById('s6-fecha').value=new Date().toISOString().split('T')[0];
@@ -2715,6 +2733,7 @@ async function initS6(){
   await s6CargarAgendas();
   s6RenderAgendasActa();
   s6RenderHistorial();
+  s6BorrRestaurar();
 }
 
 window.addEventListener('DOMContentLoaded', () => {
