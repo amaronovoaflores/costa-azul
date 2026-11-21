@@ -2489,6 +2489,37 @@ Responde SOLO con un objeto JSON con esta estructura exacta (sin explicaciones n
 }
 
 // Generar Acta con IA
+// Redacción del acta con el tenor del acta modelo (Junta Extraordinaria del 24 de marzo de 2026, carpeta Myriam ECA).
+// Sin IA ni red: plantillas locales. Las variaciones largas se redactan en el chat de Claude con este mismo tenor.
+function s6RedactarActa(ctx){
+  const tipo=(s6AgendaSel.tipo||'').toLowerCase().startsWith('ext')?'Extraordinaria':'Ordinaria';
+  const hIni=document.getElementById('s6-ac-hora-ini').value, hFin=document.getElementById('s6-ac-hora-fin').value;
+  const fechaLarga=new Date(document.getElementById('s6-ac-fecha').value+'T12:00:00').toLocaleDateString('es-PE',{day:'numeric',month:'long',year:'numeric'});
+  const diaMes=new Date(document.getElementById('s6-ac-fecha').value+'T12:00:00').toLocaleDateString('es-PE',{day:'numeric',month:'long'});
+  const est=c=>(s6DirectivaPresencia[c]||{}).estado;
+  const quien=(...cs)=>{for(const c of cs){if(est(c)==='presente'||est(c)===undefined)return S6_DIRECTIVA[c];}return S6_DIRECTIVA[cs[0]];};
+  const preside=quien('presidente','vicepresidenta');
+  const secre=quien('secretaria','tesorera');
+  const cargoPre=preside.cargo, cargoSec=secre.cargo;
+  const art=c=>c==='Secretaria'||c==='Tesorera'||c==='Vicepresidenta'?'la Sra.':'el Sr.';
+  const P='</p><p style="color:#1E293B;font-size:13px;margin-bottom:16px;text-align:justify">';
+  const apertura='En la ciudad de Lima, siendo las '+hIni+' horas del día '+fechaLarga+', se reunieron los propietarios del <strong>EDIFICIO COSTA AZUL</strong>, inmueble ubicado en Av. Paseo de la República N° 6240, distrito de Miraflores, provincia y departamento de Lima, en Asamblea '+tipo+' de la Junta de Propietarios, previamente convocada por el Presidente de la Junta de Propietarios.'
+    +P+'Preside la reunión '+art(cargoPre)+' <strong>'+preside.nombre+'</strong>, '+(art(cargoPre)==='la Sra.'?'identificada':'identificado')+' con DNI N° '+preside.dni+', en su calidad de '+cargoPre+' de la Junta de Propietarios EDIFICIO COSTA AZUL, actuando como '+cargoSec+' '+art(cargoSec)+' <strong>'+secre.nombre+'</strong>, identificada con DNI N° '+secre.dni+'.'
+    +P+'Luego de verificarse la asistencia de los propietarios y el quórum correspondiente, '+(cargoPre==='Presidente'?'el Presidente':'la '+cargoPre)+' declara válidamente instalada la Asamblea y se procede a tratar los puntos de agenda.';
+  const quorum='Luego de verificarse la asistencia de los propietarios y el quórum requerido para la sesión en primera convocatoria, el '+diaMes+' a horas '+hIni+', de acuerdo con lo establecido en el Reglamento Interno vigente, se dejó constancia de que la convocatoria a la presente Junta de Propietarios se efectuó mediante esquelas dirigidas a todos los miembros de la Junta de Propietarios del Edificio, contándose con la asistencia de '+ctx.total+' de 17 departamentos, equivalentes a '+ctx.votosQuorum+' votos.'
+    +P+'Habiéndose verificado las esquelas correspondientes y determinado el quórum suficiente, de conformidad con lo previsto en el Reglamento Interno, '+(cargoPre==='Presidente'?'el Presidente':'la '+cargoPre)+' declara válidamente instalada la Asamblea y se procede a instalar la presente Sesión de Junta '+tipo+' de Propietarios, con la siguiente agenda:';
+  const acuerdos=s6Acuerdos.map(a=>{
+    let t=(a.texto||'').trim();
+    if(!t)t='Aprobar el punto de agenda: «'+a.punto+'».';
+    t=t.charAt(0).toUpperCase()+t.slice(1);
+    return /[.;:!?]$/.test(t)?t:t+'.';
+  });
+  const todosUnan=s6Acuerdos.every(a=>(a.voto||'UNANIMIDAD')==='UNANIMIDAD');
+  const introAcu='Luego de deliberar sobre '+(s6Acuerdos.length===1?'el punto':'los puntos')+' de agenda, la Asamblea de Propietarios'+(todosUnan?', por <strong>UNANIMIDAD</strong>,':'')+' adopta '+(s6Acuerdos.length===1?'el siguiente acuerdo':'los siguientes acuerdos')+':';
+  const cierre='No habiendo otro asunto que tratar, se da por finalizada la Asamblea siendo las '+hFin+' horas del mismo día, firmando los presentes en señal de conformidad.';
+  const certificacion='De conformidad a lo establecido por el Decreto Supremo N° 006-2013-JUS, segundo párrafo de la Primera Disposición Complementaria Final, certifico que, en el acta de fecha '+fechaLarga+', obrante en el Libro de Actas N° 01 de la JUNTA DE PROPIETARIOS DEL EDIFICIO COSTA AZUL, los propietarios intervinientes se hallan habilitados para concurrir a la asamblea según la partida electrónica de la partida matriz del predio y de las partidas electrónicas en las cuales se hallan inscritos todos y cada uno de los propietarios; y que las firmas que aparecen suscritas corresponden a los mismos, lo que doy fe.';
+  return {apertura,quorum,introAcu,acuerdos,cierre,certificacion,preside};
+}
 async function s6GenerarActa(){
   if(!s6AgendaSel){s6Status('s6-ac-status','Selecciona una agenda primero','error');return;}
   const fecha=document.getElementById('s6-ac-fecha').value;
@@ -2496,7 +2527,7 @@ async function s6GenerarActa(){
   const total=Object.keys(s6Quorum).length;
   if(total<10){s6Status('s6-ac-status',`Quórum insuficiente: ${total}/17`,'error');return;}
   if(s6Acuerdos.length===0){s6Status('s6-ac-status','Importa los puntos primero','error');return;}
-  s6Status('s6-ac-status','✨ Redactando acta con IA...','loading');
+  s6Status('s6-ac-status','Redactando acta...','loading');
   const fechaStr=new Date(fecha+'T12:00:00').toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   const presentes=S6_PROPIETARIOS.filter(p=>s6Quorum[p.dpto]);
   const presentesList=presentes.map(p=>`• Dpto ${p.dpto}: ${p.nombre}${s6Quorum[p.dpto]==='poder'?` (rep. por ${s6Poderes[p.dpto]})`:''} (${p.pct})`).join('\n');
@@ -2517,20 +2548,7 @@ Responde SOLO con un objeto JSON (sin markdown ni explicaciones):
   "cierre": "párrafo de cierre formal"
 }`;
   try{
-    let resp;
-    try{
-      resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
-    }catch(e){
-      resp=await fetch('https://corsproxy.io/?https://api.anthropic.com/v1/messages',{method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
-    }
-    const data=await resp.json();
-    let txt=(data.content?.[0]?.text||'').replace(/```json|```/g,'').trim();
-    let p;
-    try{p=JSON.parse(txt);}catch{p={apertura:txt,quorum:'Quórum válido con '+total+' de 17 propietarios.',acuerdos:s6Acuerdos.map(a=>a.texto||a.punto),cierre:'Sin más asuntos, se levantó la sesión.'};}
+    const p=s6RedactarActa({fechaStr,total,votosQuorum:s6ContarQuorum()});
     const nums=['PRIMERO','SEGUNDO','TERCERO','CUARTO','QUINTO','SEXTO','SÉPTIMO','OCTAVO','NOVENO','DÉCIMO'];
     // Construir lista de asistentes con manejo correcto de poderes y dptos con 2 propietarios
     const presHTML=S6_PROPIETARIOS.filter(pr=>s6Quorum[pr.dpto]).map(pr=>{
@@ -2562,7 +2580,7 @@ Responde SOLO con un objeto JSON (sin markdown ni explicaciones):
       const puntoOriginal=s6Acuerdos[i]?.punto||'';
       const votacion=s6Acuerdos[i]?.voto||'UNANIMIDAD';
       return `<div style="margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #EEF4FB">
-        <div style="font-weight:700;color:#0D1B2A;font-size:13px;margin-bottom:4px">${num}.-</div>
+        <div style="font-weight:700;color:#0D1B2A;font-size:13px;margin-bottom:4px">${num}:</div>
         <div style="font-size:11px;color:#64748B;font-style:italic;margin-bottom:6px;padding:4px 10px;background:#F8FAFC;border-left:3px solid #C9A84C">${puntoOriginal}</div>
         <p style="color:#1E293B;font-size:13px;margin-bottom:6px">${a}</p>
         <div style="font-size:10px;color:#1A6B8A;font-weight:600">Votación: ${votacion}</div>
@@ -2579,9 +2597,12 @@ Responde SOLO con un objeto JSON (sin markdown ni explicaciones):
       +'<div style="font-size:13px;color:#ffffff;font-weight:600;margin-bottom:2px">Junta '+s6AgendaSel.tipo+' N° '+s6AgendaSel.numero+' — '+s6AgendaSel.anio+'</div>'
       +'<div style="font-size:11px;color:#94A3B8">'+fechaStr+' · '+horaIni+' a '+horaFin+' hrs</div>'
       +'</div>'
-      +'<p style="color:#1E293B;font-size:13px;margin-bottom:16px">'+p.apertura+'</p>'
-      +'<p style="color:#1E293B;font-size:13px;margin-bottom:8px">Reunidos en <strong>Av. Paseo de la República N° 6240, Miraflores, Lima</strong>, el día <strong>'+fechaStr+'</strong> a las <strong>'+horaIni+' horas</strong>, con quórum válido de <strong>'+votosQuorum+' votos</strong>, la Junta de Propietarios acordó lo siguiente:</p>'
-      +'<p style="font-weight:700;color:#1E293B;margin-bottom:12px;font-size:13px;margin-top:20px">ACUERDOS ADOPTADOS:</p>'
+      +'<p style="color:#1E293B;font-size:13px;margin-bottom:16px;text-align:justify">'+p.apertura+'</p>'
+      +'<p style="font-weight:700;color:#1E293B;font-size:13px;margin:18px 0 8px">QUÓRUM</p>'
+      +'<p style="color:#1E293B;font-size:13px;margin-bottom:16px;text-align:justify">'+p.quorum+'</p>'
+      +'<p style="font-weight:700;color:#1E293B;font-size:13px;margin:18px 0 8px">AGENDA</p>'
+      +'<ol style="color:#1E293B;font-size:13px;margin:0 0 16px 20px;padding:0">'+s6Acuerdos.map(a=>'<li style="margin-bottom:4px">'+a.punto+'</li>').join('')+'</ol>'
+      +'<p style="font-weight:700;color:#1E293B;margin-bottom:8px;font-size:13px;margin-top:20px">ACUERDOS</p><p style="color:#1E293B;font-size:13px;margin-bottom:12px;text-align:justify">'+p.introAcu+'</p>'
       +acuHTML
       +'<p style="color:#1E293B;font-size:13px;margin-top:16px;margin-bottom:16px">'+p.cierre+'</p>'
       +'<p style="color:#64748B;font-size:11px;margin-bottom:40px">Partida Registral N° 49028660 del Registro de Propiedad Inmueble de Lima.</p>'
@@ -2624,6 +2645,9 @@ Responde SOLO con un objeto JSON (sin markdown ni explicaciones):
       +'<th style="padding:6px 12px;text-align:left;background:#EEF4FB;color:#64748B;font-size:11px;border:1px solid #DDE6F0">Propietario</th>'
       +'<th style="padding:6px 12px;text-align:left;background:#EEF4FB;color:#64748B;font-size:11px;border:1px solid #DDE6F0">Asistencia</th>'
       +'</tr></thead><tbody>'+presHTML+'</tbody></table>'
+      +'<p style="font-weight:700;color:#1E293B;font-size:12px;margin:26px 0 8px">CERTIFICACIÓN</p>'
+      +'<p style="color:#1E293B;font-size:12px;text-align:justify;margin-bottom:46px">'+p.certificacion+'</p>'
+      +'<div style="text-align:center"><div style="border-top:1px solid #1E293B;display:inline-block;padding-top:6px;min-width:220px"><div style="font-weight:700;font-size:12px">'+S6_DIRECTIVA.presidente.nombre+'</div><div style="font-size:11px;color:#64748B">DNI N° '+S6_DIRECTIVA.presidente.dni+'</div></div></div>'
       +'</div>';
     s6HtmlActa=s6WrapDoc(docHTML);
     document.getElementById('s6-ac-prev-title').textContent='Acta — '+s6AgendaSel.id;
