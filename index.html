@@ -1193,7 +1193,7 @@ function renderS7(MK){
   const [yy,mm]=MK.split('-').map(Number);
   const nm=mm===12?1:mm+1, ny=mm===12?yy+1:yy, NK=mk(ny,nm);
   const lblA=ML[mm]+' '+yy, lblN=ML[nm]+' '+ny;
-  const ING=DATOS.ingresos||[], EG=DATOS.egresos||[];
+  const ING=DATOS.ingresos_all||DATOS.ingresos||[], EG=DATOS.egresos_all||DATOS.egresos||[];
   const cob=Math.min(100,Math.max(0,parseFloat((document.getElementById('s7-cob')||{}).value)||0))/100;
   const _h=new Date();const hoyMK=mk(_h.getFullYear(),_h.getMonth()+1);const cerrado=MK<hoyMK; // mes terminado: ya no hay abonos supuestos
   const dayOf=fp=>{const n=parseInt(fp);return (isNaN(n)||n<1||n>31)?null:n;};
@@ -1307,6 +1307,7 @@ function renderS7(MK){
   h+='<tr><td colspan="3" style="text-align:left;font-size:12px;padding:8px 14px;background:'+(okAll?'#F0FDF4':'#FEF2F2')+';color:'+(okAll?'#166534':'#991B1B')+'">'
     +(okAll?'✔ Cuadra con S1 ('+lblA+'): ingresos cobrados '+fs(s1Ing)+' · egresos pagados '+fs(s1Eg)+' · saldo caja '+fs(s1Sc)
            :'✘ NO cuadra con S1 — ingresos S7 '+fs(firmA)+' vs S1 '+fs(s1Ing)+' · egresos S7 '+fs(totEgA)+' vs S1 '+fs(s1Eg)+' · saldo S7 '+fs(sfA)+' vs S1 '+fs(s1Sc))
+    +(()=>{const I=(DATOS.ingresos||[]).filter(r=>r.ma===MK&&r.pago>0).reduce((t,r)=>t+r.pago,0),E=(DATOS.egresos||[]).filter(r=>norm(r.ma)===MK&&r.pago!==null).reduce((t,r)=>t+r.pago,0);return (Math.abs(I-s1Ing)>0.01||Math.abs(E-s1Eg)>0.01)?' · <b>incluye filas rojas</b> (solo aquí): ingresos S1 '+fs(I)+' · egresos S1 '+fs(E):'';})()
     +(cerrado?' · mes cerrado':' · mes en curso (el saldo esperado suma los abonos supuestos)')+'</td></tr>';
   document.getElementById('tb-s7').innerHTML=h;
   document.getElementById('s7-ley').innerHTML='<b>Q1</b> = días 1–15 · <b>Q2</b> = días 16–fin · <b style="color:#16A34A">verde</b> = firme (ya en el Excel) · <b style="color:#D97706">ámbar (~)</b> = supuesto, se retira solo al registrarse en el Excel.<br><b>Ingresos supuestos:</b> cuota de cada dpto en la quincena en que suele pagar (mediana de sus últimos 6 abonos); '+lblN+' = cuota × cobranza supuesta, descontando lo ya cobrado por adelantado. <b>Rutinarios:</b> porteros (Q1/Q2), Luz del Sur, Sedapal, Contador y Lift Perú, con el monto de su último mes registrado. <b>Pendientes programados:</b> egresos con Fecha Pago futura (rojo en el Excel) y sin pago, en el mes de esa fecha. La mora de meses anteriores no se proyecta; deuda pendiente por cobrar: <b>'+fs(morosa)+'</b>.';
@@ -1685,6 +1686,33 @@ function serialToDateStr(s){
   }catch{return null;}
 }
 
+// Filas con letra ROJA en el Excel: solo cuentan en S7 (Flujo de Caja); el resto del dashboard las ignora.
+function celdasRojas(wb,nombreHoja){
+  const rojas=new Set();
+  try{
+    if(!wb.files||!wb.Styles) return rojas;
+    const dec=c=>typeof c==='string'?c:new TextDecoder('utf-8').decode(c instanceof Uint8Array?c:new Uint8Array(c));
+    const get=n=>{const f=wb.files[n]||wb.files['/'+n];return f?dec(f.content!==undefined?f.content:f):null;};
+    const idx=wb.SheetNames.indexOf(nombreHoja); if(idx<0) return rojas;
+    const rid=wb.Workbook&&wb.Workbook.Sheets&&wb.Workbook.Sheets[idx]&&wb.Workbook.Sheets[idx].id;
+    let path='xl/worksheets/sheet'+(idx+1)+'.xml';
+    const rels=get('xl/_rels/workbook.xml.rels');
+    if(rels&&rid){const m=rels.match(new RegExp('<Relationship[^>]*Id="'+rid+'"[^>]*>'));if(m){const t=m[0].match(/Target="([^"]+)"/);if(t)path='xl/'+t[1].replace(/^\/?xl\//,'');}}
+    const xml=get(path); if(!xml) return rojas;
+    const xfs=wb.Styles.CellXf||[], fonts=wb.Styles.Fonts||[];
+    const esRojo=i=>{const xf=xfs[i];if(!xf)return false;const f=fonts[xf.fontId||0];const c=f&&f.color;
+      const rgb=c&&c.rgb?String(c.rgb).toUpperCase():'';return rgb==='FFFF0000'||rgb==='FF0000';};
+    const cache={};
+    const re=/<c\s+([^>]*?)\/?>/g; let m;
+    while((m=re.exec(xml))){
+      const a=m[1]; const r=a.match(/\br="([A-Z]+\d+)"/); const st=a.match(/\bs="(\d+)"/);
+      if(!r||!st) continue; const i=+st[1];
+      if(cache[i]===undefined) cache[i]=esRojo(i);
+      if(cache[i]) rojas.add(r[1]);
+    }
+  }catch(e){console.warn('celdasRojas',e);}
+  return rojas;
+}
 async function parsearExcel(buf){
   // Cargar XLSX.js si no está disponible
   if(typeof XLSX==='undefined'){
@@ -1695,7 +1723,7 @@ async function parsearExcel(buf){
       document.head.appendChild(s);
     });
   }
-  const wb=XLSX.read(new Uint8Array(buf),{type:'array',cellStyles:true});
+  const wb=XLSX.read(new Uint8Array(buf),{type:'array',cellStyles:true,bookFiles:true});
 
   // ── Hoja RESUMEN MENSUAL ──────────────────────────────
   const ws=wb.Sheets['RESUMEN MENSUAL ']||wb.Sheets['RESUMEN MENSUAL'];
@@ -1751,6 +1779,8 @@ async function parsearExcel(buf){
     if(vIngMes)    DATOS.ing_mes    = vIngMes;
     if(vEgrMes)    DATOS.egr_mes    = vEgrMes;
 
+    const ROJAS=celdasRojas(wb,(wb.Sheets['RESUMEN MENSUAL ']?'RESUMEN MENSUAL ':'RESUMEN MENSUAL'));
+    const filaRoja=(r,c1,c2)=>{for(let c=c1;c<=c2;c++){if(ROJAS.has(XLSX.utils.encode_cell({r:r-1,c})))return true;}return false;};
     const nuevosEgr=[];
     const enc=(r,c)=>XLSX.utils.encode_cell({r:r-1,c});
     const toMK=v=>{
@@ -1798,9 +1828,9 @@ async function parsearExcel(buf){
       const pr=ws[enc(r,21)]?.v;
       const pago=(pr!==undefined&&pr!==null&&pr!==''&&pr!==0)?parseFloat(pr):null;
       if(!monto) continue; // saltar filas sin monto
-      nuevosEgr.push({ma,md,sub,tit,monto,pago,fpd:toISO(ws[enc(r,17)]?.v)});
+      nuevosEgr.push({ma,md,sub,tit,monto,pago,fpd:toISO(ws[enc(r,17)]?.v),rojo:filaRoja(r,13,21)});
     }
-    if(nuevosEgr.length>0) DATOS.egresos=nuevosEgr;
+    if(nuevosEgr.length>0){DATOS.egresos_all=nuevosEgr;DATOS.egresos=nuevosEgr.filter(x=>!x.rojo);}
 
     // ── Matriz INGRESOS — lectura completa ──────────────────
     // Fila 57=headers, datos desde fila 58
@@ -1836,8 +1866,12 @@ async function parsearExcel(buf){
       const deuda=parseFloat(ws[XLSX.utils.encode_cell({r:r-1,c:10})]?.v)||0;
       const fp=sToDate(fpRaw);
       const md=typeof mdRaw==='number'?sToMK(mdRaw):toMK(mdRaw);
-      DATOS.ingresos.push({ma, dpto:dnum, tarifa, fp, md, pago, deuda});
+      DATOS.ingresos.push({ma, dpto:dnum, tarifa, fp, md, pago, deuda, rojo:filaRoja(r,0,10)});
     }
+
+    DATOS.ingresos_all=DATOS.ingresos;
+    DATOS.ingresos=DATOS.ingresos_all.filter(x=>!x.rojo);
+    DATOS.n_rojas=(DATOS.ingresos_all.length-DATOS.ingresos.length)+((DATOS.egresos_all||[]).length-(DATOS.egresos||[]).length);
 
     // Construir DATOS.dptos dinámicamente:
     // Para cada dpto, mostrar todas sus deudas pendientes + pagos del mes seleccionado
